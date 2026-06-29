@@ -1,0 +1,38 @@
+# robot.yaml — RCC / rebot-friendly run profile for the WNW Robot Framework suite.
+# Mirrors the npm scripts of the original Playwright project (config/playwright.*.ts).
+#
+# Default target is STAGING (safe — same posture as the Playwright root config).
+# PROD order-creation / 2C2P card submission stay gated behind ALLOW_PROD_ORDER /
+# ALLOW_PROD_2C2P, exactly like the source.
+
+tasks:
+  # Full suite on staging (safe default). Equivalent to `npm run stg`.
+  Staging:
+    shell: robot --variable ENV:staging --variablefile resources/variables/env_staging.yaml --outputdir results tests
+
+  # Full purchase loop on staging. Equivalent to `npm run stg:payment`.
+  Staging Payment:
+    shell: robot --variable ENV:staging --variablefile resources/variables/env_staging.yaml --outputdir results tests/e2e/TC-PAY_full-purchase-loop.robot
+
+  # 2C2P card-declined on staging. Equivalent to `npm run stg:2c2p`.
+  Staging 2C2P:
+    shell: robot --variable ENV:staging --variablefile resources/variables/env_staging.yaml --outputdir results tests/regression/TC-PAY-CARD-NEG_card-declined.robot
+
+  # Read-only smoke on PROD (no orders created). Equivalent to `npm run prod:smoke`.
+  Prod Smoke:
+    shell: robot --variable ENV:prod --variablefile resources/variables/env_prod.yaml --include smoke --outputdir results tests
+
+  # Unit (date-helper) suite — no browser needed.
+  Unit:
+    shell: robot --outputdir results tests/unit
+
+condaConfigFile: ""
+environmentConfigs: []
+artifactsDir: results
+PATH:
+  - .
+PYTHONPATH:
+  - .
+  - libraries
+ignoreFiles:
+  - .gitignore

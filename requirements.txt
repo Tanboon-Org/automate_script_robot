@@ -1,0 +1,9 @@
+# Robot Framework automation suite — WNW funeral-wreath e-commerce (POM)
+# Converted from the Playwright suite in ../automation-tester-with-ai
+robotframework==7.1.1
+robotframework-seleniumlibrary==6.6.1
+# YAML variable files (resources/variables/*.yaml)
+robotframework-pythonlibcore>=4.4.1
+PyYAML>=6.0
+# Selenium driver management (Selenium Manager ships with selenium>=4.6 — no manual chromedriver)
+selenium>=4.27.0

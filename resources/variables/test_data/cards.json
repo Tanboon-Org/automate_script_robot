@@ -1,0 +1,24 @@
+[
+  {
+    "key": "declined_non3ds",
+    "pan": "4444333322221111",
+    "expMonth": "12",
+    "expYear": "30",
+    "expCombined": "12/30",
+    "cvv": "123",
+    "scenario": "declined",
+    "threeDS": false,
+    "notes": "Public 2C2P sandbox test card — documented at developer.2c2p.com. Non-3DS (no OTP). Always declines. Safe to use on staging only. expCombined is for the MM/YY single combined field on the 2C2P hosted page."
+  },
+  {
+    "key": "success_3ds",
+    "pan": "4111111111111111",
+    "expMonth": "12",
+    "expYear": "30",
+    "expCombined": "12/30",
+    "cvv": "123",
+    "scenario": "success",
+    "threeDS": true,
+    "notes": "Public 2C2P sandbox test card — documented at developer.2c2p.com. 3DS (OTP required). Reference only — NOT used in automated tests (OTP requires manual intervention)."
+  }
+]

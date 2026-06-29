@@ -1,0 +1,20 @@
+[
+  {
+    "key": "qr",
+    "method": "qr",
+    "label": "QR PromptPay",
+    "radioValue": "qr",
+    "feePercent": 0,
+    "feeNote": null,
+    "notes": "Default payment method used in automated tests. No extra fee."
+  },
+  {
+    "key": "card",
+    "method": "card",
+    "label": "บัตรเครดิต/เดบิต",
+    "radioValue": "card",
+    "feePercent": 3,
+    "feeNote": "+3%",
+    "notes": "Credit/debit card. Adds 3% fee. TC-CHK-08 variant."
+  }
+]

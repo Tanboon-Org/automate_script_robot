@@ -1,0 +1,23 @@
+[
+  {
+    "key": "valid",
+    "code": "OWNER_SUPPLIED_VALID",
+    "expectedDiscount": null,
+    "scenario": "valid",
+    "notes": "Replace with a real valid code from the site owner. TC-CHK-07 is test.fixme() until supplied."
+  },
+  {
+    "key": "invalid",
+    "code": "INVALID123",
+    "expectedDiscount": 0,
+    "scenario": "invalid",
+    "notes": "Deterministic invalid code — always rejected."
+  },
+  {
+    "key": "expired",
+    "code": "OWNER_SUPPLIED_EXPIRED",
+    "expectedDiscount": 0,
+    "scenario": "expired",
+    "notes": "Replace with a real expired code from the site owner. TC-CHK-07 is test.fixme() until supplied."
+  }
+]

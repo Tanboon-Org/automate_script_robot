@@ -1,0 +1,10 @@
+# Staging environment — safe default (mirrors config/playwright.stg.ts).
+# baseURL: https://wnw2025-frontend.dev-app-bit.com
+ENV: staging
+BASE_URL: https://wnw2025-frontend.dev-app-bit.com
+BROWSER: chrome
+# Headless by default for CI parity; override with --variable HEADLESS:False locally.
+HEADLESS: true
+# PROD safety gates — never enforced on staging, kept here for symmetry.
+ALLOW_PROD_ORDER: false
+ALLOW_PROD_2C2P: false

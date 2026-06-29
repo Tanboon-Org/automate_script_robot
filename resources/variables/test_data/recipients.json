@@ -1,0 +1,8 @@
+[
+  {
+    "key": "qa_test",
+    "deceasedName": "TEST QA ห้ามจัดส่ง",
+    "phone": "0800000000",
+    "notes": "TEST keyword present per PROD caveat. Phone = delivery contact (phone_number field)."
+  }
+]

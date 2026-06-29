@@ -1,0 +1,414 @@
+{
+  "_meta": {
+    "_desc": "ข้อมูลส่วนหัว: อธิบายภาพรวมไฟล์, ความหมายของ field พิเศษ และข้อจำกัด",
+    "project": "Wreath Na Wat",
+    "scope": "Checkout / Order Flow Final Test Cases",
+    "source": "QA-WreathNaWat-Checkout-OrderFlow-Final-TestCases.md (Section 4)",
+    "date": "2026-06-25",
+    "fieldGuide": {
+      "_desc": "คำอธิบาย field พิเศษที่ขึ้นต้นด้วย _ ทุกตัวในไฟล์นี้",
+      "_desc_field": "คำอธิบายภาษาไทยว่า block/ค่านี้คืออะไร (ใช้ค้นหาเร็ว ๆ ได้)",
+      "_TD": "Test Data ID อ้างกลับ Section 4 ของเอกสาร Final (เช่น TD-02)",
+      "_source": "ใครเตรียม: dev=ทีม dev จัดให้ | qa=QA ทำเองได้ | runtime=ได้จากรัน flow | dev+runtime/qa=ผสม",
+      "_status": "todo=ยังไม่มีค่าจริง ต้องเติมก่อน execute | ready=พร้อมใช้",
+      "_usedBy": "รายชื่อ Test Case ID ที่ใช้ข้อมูลก้อนนี้",
+      "_note": "หมายเหตุเพิ่มเติม",
+      "_warning": "ข้อควรระวัง ต้องยืนยันก่อนใช้",
+      "<<ask-dev: ...>>": "placeholder ที่ต้องขอค่าจริงจาก dev (ค้นด้วย grep '<<ask-dev')",
+      "{{...}}": "placeholder รันไทม์ ให้ automation framework เติมเอง (เช่น {{today+2days}}, {{now+4h}})"
+    },
+    "_sections": {
+      "_desc": "สารบัญ: top-level key ทั้งหมดในไฟล์ + ใช้ทดสอบเรื่องอะไร",
+      "env": "ค่า config/environment ที่ต้องยืนยันจาก dev (fee%, limit, จังหวัด, time slot)",
+      "users": "ผู้ใช้ทุกแบบ: guest, login+token, สมัครใหม่, email ซ้ำ, token ปลอม",
+      "products": "สินค้า: สั่งได้, สั่งไม่ได้, slug ปลอม, จำนวน boundary 10/11",
+      "coupons": "คูปองทุกชนิด: valid, invalid, used, min-max, amount, percent, campaign",
+      "locations": "สถานที่จัดส่ง: ในเขต 6 จังหวัด, นอกเขต, allow_delivery=false",
+      "checkoutForm": "ข้อมูลกรอกฟอร์ม checkout + ชุด boundary (วันเวลา, เบอร์, อีเมล, ข้อความ, ป้าย, security)",
+      "payment": "การชำระเงิน: วิธีชำระ, bank_id mapping, 2c2p sandbox, สลิป, ข้อมูลโอน",
+      "orders": "ออเดอร์ที่ต้องมีอยู่ก่อน: รอชำระ (status 0), ชำระแล้ว (status 1/2)",
+      "tracking": "ข้อมูลติดตามสถานะ (microservice แยก — ต้องขอ spec)",
+      "mockApi": "สถานการณ์ mock API error สำหรับ intercept ด้วย page.route()"
+    },
+    "constraints": [
+      "ห้ามทำ payment transaction จริง — sandbox/mock เท่านั้น",
+      "ค่า env ต้องยืนยันจาก dev ก่อน assert ตัวเลข",
+      "coupon ทุกตัวต้องใช้คู่กับ users.loginUser (web_user_token)"
+    ]
+  },
+
+  "env": {
+    "_desc": "ค่า config ของระบบที่มีผลต่อ flow — ส่วนใหญ่อยู่ในไฟล์ .env ฝั่ง backend ต้องขอ dev ยืนยัน",
+    "_TD": "ENV",
+    "_source": "dev",
+    "_status": "ready",
+    "baseUrlFrontend": "https://wnw2025-frontend.dev-app-bit.com",
+    "creditCardServiceFeePercentage": "3",
+    "excludedTags": "[{\"key\":\"สถานะสินค้า\",\"value\":\"hidden\"},{\"key\":\"สถานะสินค้า\",\"value\":\"สินค้างดจำหน่าย\"}]",
+    "excludedTagsUnlessSpecified": "[{\"key\":\"ประเภทพวงหรีด\",\"value\":\"TBFขายข้ามเว็บ\"}]",
+    "couponMinPriceDefault": "1000",
+    "couponMaxPriceDefault": "9999999999",
+    "cartMaxQuantity": 10,
+    "deliveryAllowedProvinces": ["กรุงเทพมหานคร", "นนทบุรี", "ปทุมธานี", "สมุทรปราการ", "สมุทรสาคร", "นครปฐม"],
+    "deliveryTimeSlots": ["17:00", "18:00", "19:00"]
+  },
+
+  "users": {
+    "_desc": "บัญชีผู้ใช้สำหรับทดสอบทุกสถานการณ์ (guest / login / สมัคร / negative)",
+    "guestUser": {
+      "_desc": "ผู้ใช้ไม่ล็อกอิน — ใช้ทดสอบ guest checkout และเคสที่คูปองใช้ไม่ได้",
+      "_TD": "TD-01",
+      "_source": "qa",
+      "_status": "ready",
+      "_usedBy": ["TC-PROMO-04", "TC-EMPTY-01", "TC-CART-03-R"],
+      "note": "1130|7T9znoSNttcVGFoixz6Gd11tavlTAaUJk2Vo8QtX4fcbb859"
+    },
+    "loginUser": {
+      "_desc": "ผู้ใช้ที่ล็อกอินได้จริง + มี web_user_token — จำเป็นสำหรับทุกเคสคูปอง",
+      "_TD": "TD-02",
+      "_source": "dev",
+      "_status": "ready",
+      "_usedBy": ["TC-PROMO-01-R", "TC-PROMO-02-R", "TC-PROMO-05", "TC-PROMO-06", "TC-PROMO-07", "TC-PROMO-10", "TC-AUTH-04", "TC-SESS-01", "TC-CART-07"],
+      "email": "inoobeam@hotmail.com",
+      "password": "123456789",
+      "webUserToken": "<<ask-dev: ใช้กับ coupon / order ที่ login>>"
+    },
+    "newRegisterUser": {
+      "_desc": "ข้อมูลสมัครสมาชิกใหม่ตอน checkout — email ต้องไม่ซ้ำของเดิม (gen ใหม่ทุกรัน)",
+      "_TD": "TD-02b",
+      "_source": "qa",
+      "_status": "ready",
+      "_usedBy": ["TC-AUTH-01-R"],
+      "email": "qa-newuser+{{timestamp}}@test.com",
+      "password": "Test@1234",
+      "note": "email ต้องไม่เคยมีในระบบ (gen ใหม่ทุกรัน)"
+    },
+    "existingEmailForDuplicate": {
+      "_desc": "email ที่มีในระบบแล้ว — ใช้ทดสอบสมัครซ้ำต้องถูก reject",
+      "_TD": "TD-02c",
+      "_source": "dev",
+      "_status": "ready",
+      "_usedBy": ["TC-AUTH-03"],
+      "email": "chalinee.ma@uam.co.th"
+    },
+    "invalidToken": {
+      "_desc": "token ปลอม — ใช้ทดสอบ create order ด้วย token ผิดต้องถูก reject",
+      "_TD": "TD-02d",
+      "_source": "qa",
+      "_status": "ready",
+      "_usedBy": ["TC-AUTH-04"],
+      "webUserToken": "invalid-token-xxxxxxxx"
+    }
+  },
+
+  "products": {
+    "_desc": "สินค้าสำหรับทดสอบ — แยกตามสถานะการสั่งซื้อและ boundary จำนวน",
+    "orderable": {
+      "_desc": "สินค้าปกติที่สั่งได้ (allow_add_to_cart=true) — ใช้เป็นสินค้าหลักของ flow",
+      "_TD": "TD-03",
+      "_source": "dev",
+      "_status": "ready",
+      "_usedBy": ["TC-PDP-02", "TC-CART-*", "TC-CHK-01-R"],
+      "slug": "h016-wnw-บุปผาสีหงชาด",
+      "codeInCommon": "H016",
+      "regularPrice": "3099.00",
+      "promotionPrice": "2899.00"
+    },
+    "orderableSecond": {
+      "_desc": "สินค้าตัวที่ 2 ราคาต่างจากตัวแรก — ใช้ทดสอบคำนวณยอดหลายชิ้น",
+      "_TD": "TD-03b",
+      "_source": "dev",
+      "_status": "ready",
+      "_usedBy": ["TC-CHK-06-R (multi-item total)"],
+      "slug": "b301-wnw-วลิลา-01-16"
+    },
+    "notOrderable": {
+      "_desc": "สินค้าที่สั่งไม่ได้ (allow_add_to_cart=false) — ต้องซ่อนปุ่ม Buy Now แสดง LINE",
+      "_TD": "TD-04",
+      "_source": "dev",
+      "_status": "todo",
+      "_usedBy": ["TC-PDP-05"],
+      "slug": "b301-wnw-วลิลา-01-16"
+    },
+    "invalidSlug": {
+      "_desc": "slug ที่ไม่มีจริง — ใช้ทดสอบ order ถูก reject 404 (ProductSlugExists)",
+      "_TD": "TD-05",
+      "_source": "qa",
+      "_status": "ready",
+      "_usedBy": ["TC-CHK-12"],
+      "slug": "not-exist-product-xxxxx"
+    },
+    "quantityBoundary": {
+      "_desc": "ค่าจำนวนสำหรับทดสอบ limit ตะกร้า — 11 ต้องขึ้น modal (เกิน 10)",
+      "_TD": "TD-06",
+      "_source": "qa",
+      "_status": "ready",
+      "_usedBy": ["TC-CART-06"],
+      "values": [9, 10, 11],
+      "note": "limit รวม 10 — 11 ต้องขึ้น modal"
+    }
+  },
+
+  "coupons": {
+    "_desc": "คูปองส่วนลดทุกชนิด — ทุกตัวต้องใช้คู่ users.loginUser (คูปองต้อง login)",
+    "valid": {
+      "_desc": "คูปองใช้ได้ปกติ — ยอดตะกร้าต้องอยู่ในช่วง min/max และยังไม่เคยใช้",
+      "_TD": "TD-07",
+      "_source": "dev",
+      "_status": "todo",
+      "_usedBy": ["TC-PROMO-01-R"],
+      "code": "<<ask-dev>>",
+      "note": "ยอดตะกร้าต้องอยู่ในช่วง min/max + user ยังไม่เคยใช้"
+    },
+    "invalidOrExpired": {
+      "_desc": "คูปองไม่มีจริง / หมดอายุ — ใช้ทดสอบ error 'ไม่พบรหัสส่วนลด'",
+      "_TD": "TD-08",
+      "_source": "dev",
+      "_status": "todo",
+      "_usedBy": ["TC-PROMO-02-R"],
+      "codeNotFound": "INVALIDXXXX",
+      "codeExpired": "<<ask-dev>>"
+    },
+    "used": {
+      "_desc": "คูปองที่ loginUser ใช้ไปแล้ว (มี record ใน UserCoupon) — ห้ามใช้ซ้ำ",
+      "_TD": "TD-09",
+      "_source": "dev",
+      "_status": "todo",
+      "_usedBy": ["TC-PROMO-07"],
+      "code": "<<ask-dev: code ที่ loginUser มี record ใน UserCoupon แล้ว>>"
+    },
+    "withMinMax": {
+      "_desc": "คูปองที่กำหนดช่วงยอดขั้นต่ำ/สูงสุด — ทดสอบ WM21 + boundary แบบ strict",
+      "_TD": "TD-10",
+      "_source": "dev",
+      "_status": "todo",
+      "_usedBy": ["TC-PROMO-05", "TC-PROMO-06"],
+      "code": "<<ask-dev>>",
+      "discountMin": "<<ask-dev>>",
+      "discountMax": "<<ask-dev>>",
+      "note": "boundary แบบ strict: ยอด = min หรือ = max จะใช้ไม่ได้ (>min && <max)"
+    },
+    "amountType": {
+      "_desc": "คูปองหักเป็นจำนวนเงินบาทคงที่ (tag discount=amount)",
+      "_TD": "TD-11",
+      "_source": "dev",
+      "_status": "todo",
+      "_usedBy": ["TC-PROMO-09"],
+      "code": "<<ask-dev: tag discount=amount>>",
+      "expectedDiscount": "<<ask-dev: บาทคงที่>>"
+    },
+    "percentType": {
+      "_desc": "คูปองหักเป็นเปอร์เซ็นต์ของยอด (tag discount=percent)",
+      "_TD": "TD-12",
+      "_source": "dev",
+      "_status": "todo",
+      "_usedBy": ["TC-PROMO-09"],
+      "code": "<<ask-dev: tag discount=percent>>",
+      "percent": "<<ask-dev>>"
+    },
+    "campaign": {
+      "_desc": "คูปองเฉพาะแคมเปญ (tag discount_campaign) — ใช้ได้เฉพาะสินค้าที่ tag ตรง",
+      "_TD": "TD-13",
+      "_source": "dev",
+      "_status": "todo",
+      "_usedBy": ["TC-PROMO-09", "TC-PROMO-10"],
+      "code": "<<ask-dev: tag discount_campaign + product tag ตรง>>",
+      "applicableProductSlug": "<<ask-dev>>"
+    }
+  },
+
+  "locations": {
+    "_desc": "สถานที่จัดส่ง (วัด) — แยกตามเขตบริการและสิทธิ์การจัดส่ง",
+    "inServiceArea": {
+      "_desc": "วัดในเขตบริการ (กทม./ปริมณฑล) ส่งฟรี — ใช้เป็น location หลักของ flow",
+      "_TD": "TD-14",
+      "_source": "dev",
+      "_status": "ready",
+      "_usedBy": ["TC-CHK-01-R", "TC-PAY-04"],
+      "locationId": "65938",
+      "watName": "วัดประยุรวงศาวาส",
+      "province": "กรุงเทพมหานคร"
+    },
+    "outOfProvince": {
+      "_desc": "วัดต่างจังหวัด (นอก 6 จังหวัด) — ต้อง disable ปุ่มชำระ + modal LINE",
+      "_TD": "TD-15",
+      "_source": "qa",
+      "_status": "ready",
+      "_usedBy": ["TC-CART-05-R"],
+      "watKeyword": "วัดป่ารัตนสุวรรณ",
+      "expectedBehavior": "disable ปุ่มชำระ + modal LINE"
+    },
+    "deliveryNotAllowed": {
+      "_desc": "location ที่ระบบไม่อนุญาตจัดส่ง (allow_delivery=false) — ต้องขึ้น modal ติดต่อทีม",
+      "_TD": "TD-16",
+      "_source": "dev",
+      "_status": "todo",
+      "_usedBy": ["TC-SHIP-01"],
+      "locationId": "<<ask-dev: location ที่ allow_delivery=false>>",
+      "expectedBehavior": "modal ติดต่อทีม @wreathmala"
+    }
+  },
+
+  "checkoutForm": {
+    "_desc": "ค่ากรอกในฟอร์ม checkout — มีทั้ง happy path และชุด boundary/negative",
+    "_TD": "TD (form data)",
+    "_source": "qa",
+    "_status": "ready",
+    "_usedBy": ["TC-CHK-01-R", "TC-CHK-02-R"],
+    "happyPath": {
+      "_desc": "ชุดกรอกครบถูกต้องทั้งหมด — ใช้กับ happy path TC-CHK-01-R",
+      "deceasedName": "นายทดสอบ ระบบ",
+      "templeHall": "ศาลา 5",
+      "contactPhone": "0812345678",
+      "ordererName": "นางสาวคิวเอ เทส",
+      "ordererEmail": "qa@test.com",
+      "ordererPhone": "0898765432",
+      "deliveryDate": "{{today+2days}}",
+      "deliveryTime": "18:00",
+      "privacyPolicyAccepted": true,
+      "ribbonMessage1": "ด้วยรักและอาลัย",
+      "ribbonMessage2": "บริษัท ABC จำกัด"
+    },
+    "deliveryDateTimeBoundary": {
+      "_desc": "ชุดทดสอบกฎวัน-เวลาจัดส่ง: ห้ามอดีต / ต้อง ≥4 ชม. / ล่วงหน้า ≤30 วัน",
+      "_usedBy": ["TC-CHK-09", "TC-CHK-10", "TC-CHK-11"],
+      "past": { "date": "{{today-1day}}", "time": "12:00", "expect": "reject: ย้อนเวลาในอดีต" },
+      "within3h": { "datetime": "{{now+3h}}", "expect": "reject: ภายใน 4 ชั่วโมง" },
+      "exact4h": { "datetime": "{{now+4h}}", "expect": "pass" },
+      "day30": { "date": "{{today+30days}}", "expect": "pass" },
+      "day31": { "date": "{{today+31days}}", "expect": "reject: เกิน 30 วัน" }
+    },
+    "phoneFormats": {
+      "_desc": "ชุดเบอร์โทรทดสอบความต่าง FE/BE: FE รับเฉพาะ 0xxxxxxxxx, BE รับ +66/เบอร์บ้านด้วย",
+      "_usedBy": ["TC-CHK-04-UI", "TC-CHK-04-API"],
+      "feValid": ["0812345678"],
+      "feInvalid_beValid": ["+66812345678", "021234567"],
+      "bothInvalid": ["12345", "08a2345678"]
+    },
+    "emailFormats": {
+      "_desc": "ชุดอีเมลถูก/ผิดรูปแบบ",
+      "_usedBy": ["TC-CHK-03"],
+      "valid": ["a@b.com", "a.b+c@sub.domain.co.th"],
+      "invalid": ["abc", "abc@", "@x.com", "abc@@x.com"]
+    },
+    "textBoundary": {
+      "_desc": "ชุดข้อความขอบเขต: ทดสอบ maxlength 255, emoji/ไทย, การ trim ช่องว่าง",
+      "_usedBy": ["TC-CHK-08-R"],
+      "len255": "{{repeat 'ก' 255}}",
+      "len256": "{{repeat 'ก' 256}}",
+      "emoji": "😊ไทยEng123",
+      "withSpaces": "   เว้นหน้า-หลัง   "
+    },
+    "messageCardMismatch": {
+      "_desc": "เคสกรอกป้ายไม่ครบจำนวนพวงหรีด — สั่ง 2 ชิ้น แต่กรอกป้าย 1 ต้อง reject",
+      "_usedBy": ["TC-CHK-13"],
+      "productAmount": 2,
+      "filledCards": 1,
+      "expect": "reject: จำนวน 2 ชิ้น แต่ระบุข้อความ 1"
+    },
+    "securityPayloads": {
+      "_desc": "payload โจมตี XSS/SQLi สำหรับใส่ในช่องข้อความ (ศาลา/ป้าย)",
+      "_usedBy": ["TC-SEC-03"],
+      "xss": "<script>alert(1)</script>",
+      "sqli": "' OR '1'='1",
+      "imgXss": "\"><img src=x onerror=alert(1)>"
+    }
+  },
+
+  "payment": {
+    "_desc": "ข้อมูลการชำระเงินทุกช่องทาง — โอน/QR (method 1), บัตร 2C2P (method 2)",
+    "methods": {
+      "_desc": "วิธีชำระและ redirect ปลายทางหลังสร้างออเดอร์",
+      "_TD": "TD-17 / TD-18",
+      "_source": "qa",
+      "_status": "ready",
+      "bankTransferOrQR": { "methodId": 1, "redirect": "/payment/{tracking_id}" },
+      "creditCard": { "methodId": 2, "redirect": "/payment/2c2p/{tracking_id}" }
+    },
+    "bankIdMapping": {
+      "_desc": "ตาราง map bank_id -> payment.type ตอนแจ้งชำระ (accept_payment_infos:switch)",
+      "_usedBy": ["TC-PAY-06"],
+      "_note": "bank_id -> payment.type (accept_payment_infos:switch)",
+      "0": "2c2p (type 4)",
+      "1": "BBL? -> type 2",
+      "2": "KBANK? -> type 3",
+      "3": "KTB? -> type 1",
+      "4": "QR -> type 6",
+      "_warning": "comment ใน code สลับชวนสับสน — ยืนยันกับ dev ก่อน assert"
+    },
+    "sandbox2c2p": {
+      "_desc": "ข้อมูล 2C2P sandbox (merchant/secret/บัตรทดสอบ) — ห้ามใช้บัตรจริง",
+      "_TD": "TD-19",
+      "_source": "dev",
+      "_status": "todo",
+      "_usedBy": ["TC-PAY-10", "TC-ORD (2c2p)"],
+      "merchantId": "<<ask-dev: 2C2P_MERCHANT_ID (test)>>",
+      "secretKey": "<<ask-dev: 2C2P_SECRET_KEY (test)>>",
+      "testCard": "<<ask-dev: เลขบัตรทดสอบ — ห้ามบัตรจริง>>"
+    },
+    "slipFile": {
+      "_desc": "ไฟล์รูปสลิปโอนเงินสำหรับ upload",
+      "_TD": "TD-23",
+      "_source": "qa",
+      "_status": "ready",
+      "_usedBy": ["TC-PAY-01-R", "TC-PAY-05"],
+      "path": "./fixtures/files/slip-sample.jpg",
+      "mimeType": "image/jpeg"
+    },
+    "transferInfo": {
+      "_desc": "ข้อมูลแจ้งโอน — วันที่/เวลาต้องเป็นรูปแบบ Y-m-d / H:i",
+      "_usedBy": ["TC-PAY-01-R", "TC-PAY-09"],
+      "valid": { "transferDate": "{{today}}", "transferTime": "14:30", "price": "<<= order total>>" },
+      "invalidFormat": { "transferDate": "2026/01/01", "transferTime": "2.30pm", "expect": "reject: รูปแบบ Y-m-d / H:i" }
+    }
+  },
+
+  "orders": {
+    "_desc": "ออเดอร์ที่ต้องมีอยู่ก่อนทดสอบ payment/tracking — สร้างจากการรัน flow ใน sandbox",
+    "pendingPayment": {
+      "_desc": "ออเดอร์ที่ยังไม่ชำระ (status_payment=0) — ใช้ทดสอบหน้าแจ้งชำระ/tracking",
+      "_TD": "TD-20",
+      "_source": "runtime",
+      "_status": "ready",
+      "_usedBy": ["TC-PAY-01-R", "TC-PAY-05", "TC-PAY-06", "TC-PAY-07", "TC-PAY-09", "TC-TRK-04"],
+      "trackingId": "5cdf30cd8ecc0f69bdeb2e5493108c308e47d1b571ff4462bf5d895bf11da50d",
+      "statusPayment": 0
+    },
+    "paid": {
+      "_desc": "ออเดอร์ที่ชำระแล้ว (status_payment=1 โอน / 2 บัตร) — ใช้ทดสอบ tracking หลังจ่าย",
+      "_TD": "TD-21",
+      "_source": "runtime",
+      "_status": "ready",
+      "_usedBy": ["TC-TRK-04", "TC-PAY-08"],
+      "trackingId": "818b13bda4e57368f7ee1d3c4a7c5052cd2c18a3bcebc9b4b6e5a0e22e8314d8",
+      "statusPayment": "1 (โอน) หรือ 2 (บัตร)"
+    }
+  },
+
+  "tracking": {
+    "_desc": "ข้อมูลค้นหาติดตามสถานะ — service /track-order อยู่นอก repo ต้องขอ spec จาก dev",
+    "_TD": "TD-22",
+    "_source": "runtime+dev",
+    "_status": "todo",
+    "_usedBy": ["TC-TRK-01a-R", "TC-TRK-02", "TC-TRK-03", "TC-TRK-04"],
+    "_warning": "tracking microservice /track-order อยู่นอก repo — ต้องขอ spec/endpoint จาก dev",
+    "validTrackingId": "<<runtime>>",
+    "validOrderCodePlusContact": { "orderCode": "<<runtime>>", "phoneOrEmail": "<<runtime>>" },
+    "invalid": { "trackingId": "fake-tracking-id-0000" }
+  },
+
+  "mockApi": {
+    "_desc": "สถานการณ์จำลอง API error — ใช้ page.route() intercept ใน Playwright (ไม่ต้องพึ่ง backend จริง)",
+    "_TD": "TD-24",
+    "_source": "qa",
+    "_status": "ready",
+    "_usedBy": ["TC-API-01", "TC-API-02", "TC-SESS-01"],
+    "_note": "ใช้ page.route() intercept ใน Playwright",
+    "scenarios": {
+      "erp422": { "route": "**/api/order", "status": 422, "expect": "openErrorModal" },
+      "erp500": { "route": "**/api/total-payment", "status": 500, "expect": "modal error ไม่ crash" },
+      "timeout": { "route": "**/api/order", "behavior": "abort/delay", "expect": "modal error" },
+      "unauthorized401": { "route": "ERP_API call", "status": 401, "expect": "clearStorage + reload" }
+    }
+  }
+}

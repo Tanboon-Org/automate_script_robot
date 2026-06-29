@@ -1,0 +1,20 @@
+# Application routes — relative paths from BASE_URL (port of constants/routes.ts).
+# Source: prod-site-map.md. Works on both staging and prod.
+ROUTES:
+  HOME: /
+  CART: /cart/
+  CHECKOUT: /checkout/
+  TRACKING: /tracking/
+  HOW_TO_ORDER: /วิธีสั่งซื้อ/
+  FAQS: /faqs/
+  CONTACT: /ติดต่อเรา/
+  POLICY_COMPENSATION: /นโยบายชดเชย/
+  POLICY_PRIVACY: /นโยบายความเป็นส่วนตัว/
+  CATEGORY_BEST_SELLERS: /ร้านพวงหรีด/สินค้าขายดี/
+  CATEGORY_EXPRESS: /ร้านพวงหรีด/สินค้าส่งด่วน/
+  CATEGORY_FRESH_FLOWER: /ร้านพวงหรีด/พวงหรีดดอกไม้สด/
+  CATEGORY_SPECIAL_PRICE: /ร้านพวงหรีด/สินค้าราคาพิเศษ/
+  # product detail path is built at runtime: /พวงหรีด/<slug>/   (see Build Product Path)
+  # payment path is built at runtime:        /payment/<hash>/   (see Build Payment Path)
+  PRODUCT_PREFIX: /พวงหรีด/
+  PAYMENT_PREFIX: /payment/

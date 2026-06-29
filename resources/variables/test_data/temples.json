@@ -1,0 +1,22 @@
+[
+  {
+    "key": "wat_arun_bkk",
+    "searchTerm": "วัดอรุณราช",
+    "optionLabel": "วัดอรุณราชวราราม",
+    "fullName": "วัดอรุณราชวราราม แขวงวัดอรุณ เขตบางกอกใหญ่ กทม. 10600",
+    "hall": "ศาลา 1 (QA TEST)",
+    "province": "กรุงเทพมหานคร",
+    "freeShipping": true,
+    "notes": "Bangkok temple; free shipping. Used in manual PROD test."
+  },
+  {
+    "key": "out_of_province",
+    "searchTerm": "วัดบวรนิเวศ กาฬสินธุ์",
+    "optionLabel": "วัดบวรนิเวศ",
+    "fullName": "วัดบวรนิเวศ กาฬสินธุ์",
+    "hall": "ศาลา 1",
+    "province": "กาฬสินธุ์",
+    "freeShipping": false,
+    "notes": "Out-of-province temple — triggers D-03 gating inconsistency. TC-CHK-09 skipped until D-03 fixed."
+  }
+]

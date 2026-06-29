@@ -1,0 +1,13 @@
+# Timeouts in SECONDS (port of constants/timeouts.ts — original values were ms).
+# SeleniumLibrary waits take seconds, so every value is the source ms / 1000.
+TIMEOUTS:
+  DEFAULT: 15            # รอ element ให้มองเห็น/โต้ตอบได้ (15_000 ms)
+  NAVIGATION: 30         # SPA route transition (30_000 ms)
+  AUTOCOMPLETE: 12       # dropdown autocomplete วัด (12_000 ms)
+  RIBBON_RENDER: 20      # render ribbon preview หลัง "ตกลง" (20_000 ms)
+  RENDERER_SLOW: 15      # renderer ที่ช้าทั่วไป (15_000 ms)
+  CART_BADGE: 25         # cart badge อัปเดตหลัง addToCart (25_000 ms)
+  BADGE_BESTEFFORT: 5    # best-effort badge wait (5_000 ms)
+  CART_PERSIST: 2        # ให้ cart localStorage persist ก่อน navigate (2_000 ms)
+  ANIMATION: 1           # animation / transition (1_000 ms)
+  ORDER_CREATED: 30      # หน้า payment โหลดหลังสร้างออเดอร์ (30_000 ms)

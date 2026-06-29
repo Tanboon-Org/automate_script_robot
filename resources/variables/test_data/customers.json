@@ -1,0 +1,12 @@
+[
+  {
+    "key": "qa_test",
+    "name": "QA TEST ระบบทดสอบ (DO NOT FULFILL)",
+    "email": "AutomateTest@app-bit.co.th",
+    "phone": "0800000000",
+    "addToNewUser": false,
+    "privacyPolicyAccepted": true,
+    "acceptForEdm": false,
+    "notes": "TEST keyword present per PROD caveat. Used for automated order creation."
+  }
+]

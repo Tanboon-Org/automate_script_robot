@@ -1,0 +1,26 @@
+[
+  {
+    "key": "best_sellers",
+    "label": "สินค้าขายดี",
+    "url": "/ร้านพวงหรีด/สินค้าขายดี/",
+    "minExpectedItems": 1
+  },
+  {
+    "key": "express",
+    "label": "สินค้าส่งด่วน",
+    "url": "/ร้านพวงหรีด/สินค้าส่งด่วน/",
+    "minExpectedItems": 1
+  },
+  {
+    "key": "fresh_flower",
+    "label": "พวงหรีดดอกไม้สด",
+    "url": "/ร้านพวงหรีด/พวงหรีดดอกไม้สด/",
+    "minExpectedItems": 1
+  },
+  {
+    "key": "special_price",
+    "label": "สินค้าราคาพิเศษ",
+    "url": "/ร้านพวงหรีด/สินค้าราคาพิเศษ/",
+    "minExpectedItems": 1
+  }
+]

@@ -1,0 +1,11 @@
+results/*
+!results/.gitkeep
+__pycache__/
+*.pyc
+libraries/__pycache__/
+geckodriver.log
+selenium-screenshot-*.png
+
+# session backups / strays (not part of the suite)
+*.bak.xlsx
+README copy.md

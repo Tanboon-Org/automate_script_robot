@@ -1,0 +1,50 @@
+[
+  {
+    "key": "h014",
+    "code": "H014",
+    "slug": "h014-wnw-บุหลันพราวแสง",
+    "name": "WNW บุหลันพราวแสง",
+    "price": 1599,
+    "originalPrice": 1899,
+    "size": "M",
+    "category": "พวงหรีดดอกไม้สด",
+    "freeShipping": true,
+    "notes": "Primary baseline product (manual PROD test O-0000291286). D-01: title shows H009. ราคาอ่านจากหน้า runtime — price ที่นี่เป็น reference"
+  },
+  {
+    "key": "h017",
+    "code": "H017",
+    "slug": "h017-wnw-บุปผาเมืองฟ้า",
+    "name": "WNW บุปผาเมืองฟ้า",
+    "price": 2899,
+    "originalPrice": 3099,
+    "size": "M",
+    "category": "พวงหรีดดอกไม้สด",
+    "freeShipping": true,
+    "notes": "อยู่ใน curated pool — flow ปกติ ดอกไม้สด"
+  },
+  {
+    "key": "h015",
+    "code": "H015",
+    "slug": "h015-wnw-บุหลันพลอยสีม่วง",
+    "name": "WNW บุหลันพลอยสีม่วง",
+    "price": 0,
+    "originalPrice": null,
+    "size": "M",
+    "category": "พวงหรีดดอกไม้สด",
+    "freeShipping": true,
+    "notes": "curated pool · ราคาอ่านจากหน้า runtime (price=0 = ไม่ใช้ assert)"
+  },
+  {
+    "key": "h065",
+    "code": "H065",
+    "slug": "h065-wnw-วิมลมาลย์-01",
+    "name": "WNW วิมลมาลย์",
+    "price": 0,
+    "originalPrice": null,
+    "size": "M",
+    "category": "พวงหรีดดอกไม้สด",
+    "freeShipping": true,
+    "notes": "curated pool · ราคาอ่านจากหน้า runtime"
+  }
+]

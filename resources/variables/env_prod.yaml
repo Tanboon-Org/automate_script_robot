@@ -1,0 +1,14 @@
+# PRODUCTION environment (mirrors config/playwright.prod.ts).
+# baseURL: https://www.wreathnawat.com
+#
+# SAFETY — read twice before touching:
+#   ENV MUST be 'prod' so the @createsOrder / @cardDeclined gates fire correctly.
+#   ALLOW_PROD_ORDER / ALLOW_PROD_2C2P are default-OFF here; supply them explicitly
+#   on the command line (e.g. --variable ALLOW_PROD_ORDER:true) only for a deliberate
+#   prod run. Default-off is the safety posture.
+ENV: prod
+BASE_URL: https://www.wreathnawat.com
+BROWSER: chrome
+HEADLESS: true
+ALLOW_PROD_ORDER: false
+ALLOW_PROD_2C2P: false

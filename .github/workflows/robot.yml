@@ -1,0 +1,145 @@
+name: Robot Framework E2E (staging)
+
+# รัน Robot Framework atomic + regression บน STAGING เท่านั้น (ไม่แตะ prod, ไม่สร้าง order)
+# - push/PR -> main : รันอัตโนมัติ
+# - workflow_dispatch : กดรันเองจากหน้า Actions ได้
+# พอร์ตจากโปรเจกต์ Playwright เดิม (.github/workflows/playwright.yml)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# ยกเลิก run เก่าของ ref เดียวกันเมื่อมี push ใหม่เข้ามา
+concurrency:
+  group: robot-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Staging atomic + regression
+    runs-on: ubuntu-latest
+    # 45 นาทีเผื่อ staging ช้า
+    timeout-minutes: 45
+
+    env:
+      ENV: staging
+      # custom_library.py / db_library.py อยู่ใต้ libraries/ — ใส่เข้า import path
+      PYTHONPATH: libraries
+      # ไม่ตั้ง ALLOW_PROD_* โดยตั้งใจ — default-off คือ posture ความปลอดภัย
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # ubuntu-latest มี Google Chrome ติดมาแล้ว; Selenium Manager (selenium>=4.6)
+      # จะ resolve chromedriver ให้อัตโนมัติ ไม่ต้องลง chromedriver เอง
+      - name: Show Chrome version
+        run: google-chrome --version || google-chrome-stable --version
+
+      - name: Run staging atomic + regression tests
+        # --exclude createsorder = ตัดเทสที่สร้าง order จริง (TC-PAY, TC-PAY-05, TC-PAY-CARD-NEG)
+        # HEADLESS=true เป็น default ใน env_staging.yaml; chrome options มี --no-sandbox อยู่แล้ว
+        run: |
+          robot \
+            --pythonpath libraries --pythonpath . \
+            --variable ENV:staging \
+            --variablefile resources/variables/env_staging.yaml \
+            --exclude createsorder \
+            --outputdir results \
+            tests
+
+      # รายงาน HTML + log + output.xml + screenshots อยู่ใต้ results/
+      - name: Upload Robot Framework report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: robot-report
+          path: results/
+          retention-days: 14
+          if-no-files-found: warn
+
+      # แจ้งผลเข้า MS Teams เมื่อ run จบจริง (success/failure) — ไม่ยิงตอนถูก cancel
+      # (cancel เกิดจาก concurrency เมื่อ push ติดๆ กัน จะได้ไม่ส่งการ์ด FAILED 0/0/0 หลอกๆ)
+      - name: Notify MS Teams
+        if: ${{ !cancelled() }}
+        env:
+          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.ref_name }}
+          ACTOR: ${{ github.actor }}
+        run: |
+          if [ -z "$TEAMS_WEBHOOK_URL" ]; then
+            echo "TEAMS_WEBHOOK_URL secret ไม่ได้ตั้งไว้ — ข้ามการแจ้งเตือน Teams"
+            exit 0
+          fi
+
+          # อ่านสถิติจาก results/output.xml (<statistics><total><stat pass fail skip>)
+          if [ -f results/output.xml ]; then
+            stats=$(python3 -c "import xml.etree.ElementTree as ET; s=ET.parse('results/output.xml').getroot().find('./statistics/total/stat'); print(s.get('pass','0'), s.get('fail','0'), s.get('skip','0'))")
+            read passed failed skipped <<< "$stats"
+          else
+            echo "ไม่พบ results/output.xml (เทสอาจไม่ได้รัน) — รายงานเป็น 0 พร้อมสถานะ error"
+            passed=0; failed=0; skipped=0
+          fi
+
+          if [ "$failed" -gt 0 ] || [ ! -f results/output.xml ]; then
+            status="❌ FAILED"; color="Attention"
+          elif [ "$skipped" -gt 0 ]; then
+            status="✅ PASSED (มี skipped)"; color="Good"
+          else
+            status="✅ PASSED"; color="Good"
+          fi
+
+          payload=$(jq -n \
+            --arg status "$status" --arg color "$color" \
+            --argjson passed "$passed" --argjson failed "$failed" --argjson skipped "$skipped" \
+            --arg repo "$REPO" --arg branch "$BRANCH" --arg actor "$ACTOR" --arg url "$RUN_URL" \
+            '{
+              type: "message",
+              attachments: [{
+                contentType: "application/vnd.microsoft.card.adaptive",
+                content: {
+                  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                  type: "AdaptiveCard",
+                  version: "1.4",
+                  body: [
+                    { type: "TextBlock", size: "Large", weight: "Bolder", color: $color,
+                      text: ("Robot Framework E2E (staging) — " + $status), wrap: true },
+                    { type: "TextBlock", isSubtle: true, spacing: "None", wrap: true,
+                      text: ($repo + " • branch " + $branch + " • by " + $actor) },
+                    { type: "FactSet", facts: [
+                      { title: "✅ Passed",  value: ($passed  | tostring) },
+                      { title: "❌ Failed",  value: ($failed  | tostring) },
+                      { title: "⏭️ Skipped", value: ($skipped | tostring) }
+                    ]}
+                  ],
+                  actions: [
+                    { type: "Action.OpenUrl", title: "ดูผลรันบน GitHub", url: $url }
+                  ]
+                }
+              }]
+            }')
+
+          echo "Counts -> passed=$passed failed=$failed skipped=$skipped"
+          http_code=$(curl -sS -o /tmp/teams_resp.txt -w "%{http_code}" \
+            -H "Content-Type: application/json" -d "$payload" "$TEAMS_WEBHOOK_URL")
+          echo "Teams webhook HTTP status: $http_code"
+          echo "Response body:"; cat /tmp/teams_resp.txt; echo
+          if [ "$http_code" -ge 400 ]; then
+            echo "::error::Teams webhook ตอบกลับ HTTP $http_code — ดู response body ด้านบน"
+            exit 1
+          fi

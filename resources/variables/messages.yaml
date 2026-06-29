@@ -1,0 +1,45 @@
+# Thai UI strings used in assertions/locators (port of constants/messages.ts).
+MESSAGES:
+  # ปุ่ม
+  ADD_TO_CART: เพิ่มลงตะกร้า
+  ADDING_TO_CART: กำลังเพิ่ม
+  CHECKOUT_SUBMIT: ชำระเงิน
+  PROCEED_TO_CHECKOUT: "ซื้อทันที! เพื่อไม่พลาดรอบจัดส่ง"
+  TRACKING_SUBMIT: ติดตามสถานะ
+  COUPON_CONFIRM: ยืนยัน
+  RIBBON_CONFIRM: ตกลง
+  RIBBON_EDIT_BUTTON: แก้ไขข้อความป้าย
+  COOKIE_CLOSE: ปิด
+  # label ใน checklist ของ checkout
+  TEMPLE_LABEL: วัด
+  HALL_LABEL: ศาลา
+  DECEASED_LABEL: ชื่อผู้เสีย
+  DELIVERY_DATE_LABEL: วันจัดส่ง
+  DELIVERY_TIME_LABEL: เวลา
+  BUYER_NAME_LABEL: ชื่อ-สกุล
+  BUYER_EMAIL_LABEL: อีเมล
+  BUYER_PHONE_LABEL: เบอร์โทร
+  PAYMENT_LABEL: ช่องทางชำระ
+  RIBBON_LABEL: ข้อความป้าย
+  # placeholder
+  TEMPLE_PLACEHOLDER: ชื่อวัด
+  RIBBON_LINE1_PLACEHOLDER: "บรรทัดที่ 1: ด้วยรักและอาลัย"
+  RIBBON_LINE2_PLACEHOLDER: บรรทัดที่ 2
+  # ช่องทางการชำระเงิน
+  PAYMENT_QR_LABEL: QR PromptPay
+  PAYMENT_CARD_LABEL: บัตรเครดิต
+  PAYMENT_CARD_FEE_NOTE: 3%
+  # การติดตาม
+  TRACKING_ORDER_PLACEHOLDER: เลขออเดอร์
+  TRACKING_CONTACT_PLACEHOLDER: เบอร์โทรศัพท์ หรือ อีเมล
+  # ข้อความสถานะออเดอร์
+  ORDER_UNPAID_STATUS: ออเดอร์ยังไม่ได้รับการแจ้งชำระเงิน
+  # หมายเหตุ coupon
+  COUPON_SELECT_DATE_NOTE: เลือกวันจัดส่งก่อน
+  # การจัดส่ง
+  FREE_SHIPPING: ส่งฟรี
+  SHIPPING_ZERO: "0"
+  # popup ต่างจังหวัด
+  OUT_OF_PROVINCE_POPUP: พื้นที่จัดส่งต่างจังหวัด
+  # empty cart
+  EMPTY_CART: ยังไม่มีสินค้าในตะกร้า
