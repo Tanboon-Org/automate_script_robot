@@ -15,7 +15,9 @@
     (ไม่มี browser) จะถูกข้ามอัตโนมัติ
   * ไม่ถ่ายซ้ำตอน keyword 'Capture Page Screenshot' เอง (กัน recursion)
   * ถ้ายังไม่ได้เปิด browser หรือถ่ายไม่สำเร็จ จะข้ามเงียบ ๆ ไม่ทำให้เทสล้ม
-  * รูปถูกบันทึกใน --outputdir (results/) และ embed ลง log.html ให้เลื่อนดูได้
+  * รูปถูกฝังเป็น base64 ลง log.html โดยตรง (EMBED) → log.html เป็นไฟล์เดียวจบ
+    เปิดดูที่ไหนก็เห็นรูป ไม่ต้องพึ่งไฟล์ .png ข้างนอก (ไม่ broken image)
+    ดูได้ใน log.html โดยกด + ขยาย keyword ของ SeleniumLibrary — ไม่ใช่ report.html
 
 ปรับลดจำนวนรูป: ตั้ง env var  SHOT_MODE=action  เพื่อถ่ายเฉพาะ keyword ที่ "ขยับ" จริง
 (click/input/select/submit/go to/open/clear/press/scroll/switch/reload/choose/drag/upload)
@@ -58,7 +60,9 @@ class ScreenshotListener:
             return
         try:
             sl = BuiltIn().get_library_instance("SeleniumLibrary")
-            sl.capture_page_screenshot()
+            # "EMBED" = ฝังรูปเป็น base64 ลง log.html โดยตรง → log.html เป็นไฟล์เดียวจบ
+            # เปิดที่ไหนก็เห็นรูป ไม่ต้องพึ่งไฟล์ .png ข้างนอก (ไม่ broken image)
+            sl.capture_page_screenshot("EMBED")
         except Exception:
             # ไม่มี browser เปิดอยู่ / ถ่ายไม่ได้ — ข้าม ไม่ให้กระทบผลเทส
             pass
