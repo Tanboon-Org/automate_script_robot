@@ -35,8 +35,10 @@ ${CHK_PRIVACY_CHECKBOX}    css:input[name="privacy_policy_accepted"]
 ${CHK_EDM_CHECKBOX}        css:input[name="accept_for_edm"]
 
 # ── Payment ───────────────────────────────────────────────────────────────────
-${CHK_PAYMENT_QR_RADIO}    css:input[value="qr"]
-${CHK_PAYMENT_CARD_RADIO}    css:input[value="card"]
+# Radios are sr-only (visually hidden) but carry stable, unique ids — prefer id over the
+# value attribute so the locator stays specific across React re-renders.
+${CHK_PAYMENT_QR_RADIO}    id:payment-qr
+${CHK_PAYMENT_CARD_RADIO}    id:payment-card
 ${CHK_PAYMENT_QR_LABEL}    xpath=//*[contains(text(),'ชำระผ่าน QR PromptPay')]
 ${CHK_PAYMENT_CARD_LABEL}    xpath=//*[contains(text(),'ชำระผ่านบัตรเครดิตและเดบิต')]
 ${CHK_CARD_FEE_NOTE}       xpath=(//*[contains(text(),'+3%') or contains(text(),'ค่าธรรม')])[1]

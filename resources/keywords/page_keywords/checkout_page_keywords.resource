@@ -184,17 +184,30 @@ Select Payment Method
     Wait Until Keyword Succeeds    ${TIMEOUTS}[RENDERER_SLOW]s    0.5s    Click Payment Radio And Verify    ${radio}
 
 Click Payment Radio And Verify
-    [Documentation]    Click the (hidden) payment radio via JS and confirm it is selected.
-    ...    Retried by the caller so a transient mid-render remount self-heals.
+    [Documentation]    JS-click the (sr-only) payment radio and confirm it is selected by
+    ...    reading .checked on the SAME element synchronously. A native radio click sets
+    ...    .checked=true before any React re-render, so we never re-query the DOM by locator
+    ...    — that re-query is what hit a "locator not found" race when the order summary
+    ...    remounts on payment change. Retried by the caller so a dropped click self-heals.
     [Arguments]    ${radio}
     Wait Until Page Contains Element    ${radio}    ${TIMEOUTS}[ANIMATION]
-    Js Click Element    ${radio}
-    Checkbox Should Be Selected    ${radio}
+    ${el}=    Get WebElement    ${radio}
+    ${checked}=    Execute JavaScript    arguments[0].click(); return arguments[0].checked === true;    ARGUMENTS    ${el}
+    Should Be True    ${checked}    payment radio ${radio} did not become checked after click
 
 Assert Payment Radio Checked
     [Arguments]    ${method}
     ${radio}=    Set Variable If    '${method}' == 'qr'    ${CHK_PAYMENT_QR_RADIO}    ${CHK_PAYMENT_CARD_RADIO}
-    Wait Until Keyword Succeeds    ${TIMEOUTS}[DEFAULT]s    0.3s    Checkbox Should Be Selected    ${radio}
+    Wait Until Keyword Succeeds    ${TIMEOUTS}[DEFAULT]s    0.3s    Payment Radio Should Be Checked    ${radio}
+
+Payment Radio Should Be Checked
+    [Documentation]    True when the radio reports .checked, read live via JS. If a transient
+    ...    React remount detaches the node, Get WebElement raises and the caller's retry
+    ...    re-finds it — never a hard "checkbox not found" failure.
+    [Arguments]    ${radio}
+    ${el}=    Get WebElement    ${radio}
+    ${checked}=    Execute JavaScript    return arguments[0].checked === true;    ARGUMENTS    ${el}
+    Should Be True    ${checked}    payment radio ${radio} is not checked yet
 
 Assert All Payment Options Visible
     [Documentation]    CheckoutPage.assertAllPaymentOptionsVisible() — AC3.
