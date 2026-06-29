@@ -28,6 +28,9 @@ jobs:
       ENV: staging
       # custom_library.py / db_library.py อยู่ใต้ libraries/ — ใส่เข้า import path
       PYTHONPATH: libraries
+      # ScreenshotListener: action = ถ่ายเฉพาะ "การเคลื่อนไหว" (click/input/นำทาง) เพื่อคุม
+      # ขนาด artifact บน CI; เปลี่ยนเป็น all เพื่อถ่ายทุก step (รูปเยอะ/artifact ใหญ่ขึ้นมาก)
+      SHOT_MODE: action
       # ไม่ตั้ง ALLOW_PROD_* โดยตั้งใจ — default-off คือ posture ความปลอดภัย
 
     steps:
@@ -54,6 +57,7 @@ jobs:
         # HEADLESS=true เป็น default ใน env_staging.yaml; chrome options มี --no-sandbox อยู่แล้ว
         run: |
           robot \
+            --listener listeners/ScreenshotListener.py \
             --pythonpath libraries --pythonpath . \
             --variable ENV:staging \
             --variablefile resources/variables/env_staging.yaml \

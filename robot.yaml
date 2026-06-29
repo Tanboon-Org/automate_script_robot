@@ -5,22 +5,24 @@
 # PROD order-creation / 2C2P card submission stay gated behind ALLOW_PROD_ORDER /
 # ALLOW_PROD_2C2P, exactly like the source.
 
+# --listener listeners/ScreenshotListener.py = ถ่าย screenshot ทุก keyword ที่แตะ browser
+# (ทุกขั้นตอน) แล้ว embed ลง log.html — ลบ flag นี้ออกถ้าไม่อยากได้รูปทุก step
 tasks:
   # Full suite on staging (safe default). Equivalent to `npm run stg`.
   Staging:
-    shell: robot --variable ENV:staging --variablefile resources/variables/env_staging.yaml --outputdir results tests
+    shell: robot --listener listeners/ScreenshotListener.py --variable ENV:staging --variablefile resources/variables/env_staging.yaml --outputdir results tests
 
   # Full purchase loop on staging. Equivalent to `npm run stg:payment`.
   Staging Payment:
-    shell: robot --variable ENV:staging --variablefile resources/variables/env_staging.yaml --outputdir results tests/e2e/TC-PAY_full-purchase-loop.robot
+    shell: robot --listener listeners/ScreenshotListener.py --variable ENV:staging --variablefile resources/variables/env_staging.yaml --outputdir results tests/e2e/TC-PAY_full-purchase-loop.robot
 
   # 2C2P card-declined on staging. Equivalent to `npm run stg:2c2p`.
   Staging 2C2P:
-    shell: robot --variable ENV:staging --variablefile resources/variables/env_staging.yaml --outputdir results tests/regression/TC-PAY-CARD-NEG_card-declined.robot
+    shell: robot --listener listeners/ScreenshotListener.py --variable ENV:staging --variablefile resources/variables/env_staging.yaml --outputdir results tests/regression/TC-PAY-CARD-NEG_card-declined.robot
 
   # Read-only smoke on PROD (no orders created). Equivalent to `npm run prod:smoke`.
   Prod Smoke:
-    shell: robot --variable ENV:prod --variablefile resources/variables/env_prod.yaml --include smoke --outputdir results tests
+    shell: robot --listener listeners/ScreenshotListener.py --variable ENV:prod --variablefile resources/variables/env_prod.yaml --include smoke --outputdir results tests
 
   # Unit (date-helper) suite — no browser needed.
   Unit:
