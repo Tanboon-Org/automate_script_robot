@@ -22,5 +22,18 @@
     "label": "สินค้าราคาพิเศษ",
     "url": "/ร้านพวงหรีด/สินค้าราคาพิเศษ/",
     "minExpectedItems": 1
+  },
+  {
+    "key": "near_me",
+    "label": "พวงหรีดใกล้ฉัน",
+    "url": "/wreath-nearme/",
+    "minExpectedItems": 1
+  },
+  {
+    "key": "donate",
+    "label": "พวงหรีดบริจาค",
+    "url": "/wreath-donate/",
+    "minExpectedItems": 0,
+    "notes": "หน้า render ได้แต่บางช่วงไม่มีสินค้า tag บริจาค — smoke เช็คแค่ไม่ 404"
   }
 ]
