@@ -182,3 +182,29 @@ Logout
     Click First Visible Element    ${USER_LOGOUT_BTN}
     Wait Until Any Element Visible    ${AUTH_OPEN_BTN}    ${TIMEOUTS}[NAVIGATION]
     Page Should Not Contain Element    ${USER_LOGOUT_BTN}
+
+Open Orders Tab
+    [Documentation]    Switch to the "รายการสั่งซื้อ" tab in /user-infos (OrdersSection).
+    Click First Visible Element    ${USER_ORDERS_TAB}
+
+Open Personal Info Tab
+    [Documentation]    Switch back to the "ข้อมูลส่วนตัว" tab in /user-infos.
+    Click First Visible Element    ${USER_PERSONAL_TAB}
+
+Assert Order History Empty
+    [Documentation]    Orders tab shows the empty-state "- ยังไม่มีรายการสั่งซื้อ -".
+    Open Orders Tab
+    Wait Until Any Element Visible    ${USER_ORDERS_EMPTY}    ${TIMEOUTS}[DEFAULT]
+
+# ───────────────────────────── /forget-password (A4) ─────────────────────────────
+Open Forget Password Page
+    [Documentation]    Navigate to /forget-password/ and wait for the username field.
+    Go To Route    ${ROUTES}[FORGET_PASSWORD]
+    Wait For Page Settle
+    Wait Until Any Element Visible    ${FGT_EMAIL_INPUT}    ${TIMEOUTS}[DEFAULT]
+
+Request Password Reset
+    [Documentation]    Type an email/username and click "ตกลง" (POST /web/forgot-password).
+    [Arguments]    ${email}
+    Input Into First Visible    ${FGT_EMAIL_INPUT}    ${email}
+    Click First Visible Element    ${FGT_SUBMIT}
