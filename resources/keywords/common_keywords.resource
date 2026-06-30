@@ -60,6 +60,30 @@ Go To Absolute
     Go To    ${url}
     Wait For Page Settle
 
+Assert Content Page Loads
+    [Documentation]    SEO smoke for a static content page: navigates to BASE_URL+${path} and
+    ...    asserts it settled to real content (not the NotfoundPage), has a non-empty <title>,
+    ...    and carries a <link rel="canonical">. The 404 check uses VISIBLE text — the prerendered
+    ...    NotFound markup ships in the HTML of every page, so a source-level check false-fails.
+    [Arguments]    ${path}
+    Go To    ${BASE_URL}${path}
+    Wait For Page Settle
+    Wait Until Keyword Succeeds    ${TIMEOUTS}[DEFAULT]s    0.5s    Not Found Marker Should Be Hidden
+    ${title}=    Get Title
+    Should Not Be Empty    ${title}    ${path} has an empty <title>
+    ${has_canonical}=    Execute JavaScript    return document.querySelector('link[rel="canonical"]') ? true : false;
+    Should Be True    ${has_canonical}    ${path} is missing <link rel="canonical">
+
+Not Found Marker Should Be Hidden
+    [Documentation]    "ไม่พบหน้า" is NOT visible (page rendered real content).
+    ${visible}=    Execute JavaScript    return document.body.innerText.includes('ไม่พบหน้า');
+    Should Not Be True    ${visible}    หน้าแสดง "ไม่พบหน้า" (404)
+
+Not Found Marker Should Be Visible
+    [Documentation]    "ไม่พบหน้า" IS visible (NotfoundPage rendered).
+    ${visible}=    Execute JavaScript    return document.body.innerText.includes('ไม่พบหน้า');
+    Should Be True    ${visible}    ไม่พบข้อความ "ไม่พบหน้า" บนหน้า (คาดว่าเป็น 404)
+
 Wait For Page Settle
     [Documentation]    Port of waitHelpers.waitForPageSettle — wait for the DOM to be
     ...    interactive/complete (equivalent to Playwright 'domcontentloaded').

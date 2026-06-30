@@ -11,3 +11,5 @@ ${HEADER_SEARCH}        css:header input[type="search"], header input[type="text
 ${HEADER_LINE_LINK}     xpath=(//*[contains(text(),'@LINE')])[1]
 ${HEADER_REGISTER}      xpath=(//*[contains(text(),'สมัครสมาชิก')])[1]
 ${HEADER_LOGIN}         xpath=(//*[contains(text(),'เข้าสู่ระบบ')])[1]
+# Back-to-top: icon-only fixed button (Tailwind "fixed bottom-20 right-6"), no text/aria.
+${BACK_TO_TOP_BTN}      css:button.fixed.bottom-20, button[class*="fixed"][class*="bottom-20"]
