@@ -1,0 +1,34 @@
+[
+  {
+    "key": "login",
+    "_TD": "TD-30",
+    "_desc": "ผู้ใช้ที่ login ได้จริง + ยืนยันอีเมลแล้ว (ใช้ login/user-infos)",
+    "_status": "ready",
+    "email": "inoobeam@hotmail.com",
+    "password": "123456789"
+  },
+  {
+    "key": "duplicate_email",
+    "_TD": "TD-02c",
+    "_desc": "email ที่มีในระบบแล้ว — ใช้ทดสอบสมัครซ้ำต้องถูก reject",
+    "_status": "ready",
+    "email": "chalinee.ma@uam.co.th"
+  },
+  {
+    "key": "new_register",
+    "_TD": "TD-32",
+    "_desc": "ข้อมูลสมัครใหม่ — อีเมลถูก gen ใหม่ทุกรัน (Generate Unique Email)",
+    "_status": "ready",
+    "emailPrefix": "qa-newuser",
+    "emailDomain": "app-bit.co.th",
+    "password": "Test@1234"
+  },
+  {
+    "key": "unverified",
+    "_TD": "TD-31",
+    "_desc": "ผู้ใช้ที่ยังไม่ยืนยันอีเมล (email_verified_at=NULL) — ขอจาก dev",
+    "_status": "todo",
+    "email": "<<ask-dev: unverified user>>",
+    "password": "<<ask-dev>>"
+  }
+]

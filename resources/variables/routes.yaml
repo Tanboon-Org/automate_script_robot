@@ -5,6 +5,7 @@ ROUTES:
   CART: /cart/
   CHECKOUT: /checkout/
   TRACKING: /tracking/
+  USER_INFOS: /user-infos/
   HOW_TO_ORDER: /วิธีสั่งซื้อ/
   FAQS: /faqs/
   CONTACT: /ติดต่อเรา/

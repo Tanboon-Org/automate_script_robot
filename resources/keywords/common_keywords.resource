@@ -136,6 +136,50 @@ Some Matched Element Is Visible
     END
     Fail    No visible element matched ${locator}
 
+Get First Visible Element
+    [Documentation]    Return the first VISIBLE WebElement matched (a union locator can match a
+    ...    hidden desktop/mobile duplicate first, which is then not interactable).
+    [Arguments]    ${locator}    ${timeout}=${TIMEOUTS}[DEFAULT]
+    Wait Until Any Element Visible    ${locator}    ${timeout}
+    ${elements}=    Get WebElements    ${locator}
+    FOR    ${el}    IN    @{elements}
+        ${visible}=    Run Keyword And Return Status    Element Should Be Visible    ${el}
+        IF    ${visible}    RETURN    ${el}
+    END
+    Fail    No visible element matched ${locator}
+
+Input Into First Visible
+    [Documentation]    Type ${text} into the first visible match. Empty text just clears.
+    ...    Retried so a React re-render (StaleElementReferenceException) re-fetches the node.
+    [Arguments]    ${locator}    ${text}
+    Wait Until Keyword Succeeds    3x    0.5s    Input Into First Visible Once    ${locator}    ${text}
+
+Input Into First Visible Once
+    [Documentation]    Single attempt. Falls back to a JS value-set (firing input/change/blur)
+    ...    if the keystroke path is refused by a stubborn React field, so validation still runs.
+    [Arguments]    ${locator}    ${text}
+    ${el}=    Get First Visible Element    ${locator}
+    Run Keyword And Ignore Error    Clear Element Text    ${el}
+    IF    '${text}' == '${EMPTY}'    RETURN
+    ${ok}=    Run Keyword And Return Status    Input Text    ${el}    ${text}
+    IF    not ${ok}
+        Execute JavaScript
+        ...    arguments[0].value=arguments[1]; arguments[0].dispatchEvent(new Event('input',{bubbles:true})); arguments[0].dispatchEvent(new Event('change',{bubbles:true})); arguments[0].dispatchEvent(new Event('blur',{bubbles:true}));
+        ...    ARGUMENTS    ${el}    ${text}
+    END
+
+Click First Visible Element
+    [Documentation]    Click the first visible match (JS-click fallback for hidden overlays).
+    ...    Retried so a re-render (StaleElementReferenceException) re-fetches the node.
+    [Arguments]    ${locator}
+    Wait Until Keyword Succeeds    3x    0.5s    Click First Visible Element Once    ${locator}
+
+Click First Visible Element Once
+    [Arguments]    ${locator}
+    ${el}=    Get First Visible Element    ${locator}
+    ${ok}=    Run Keyword And Return Status    Click Element    ${el}
+    IF    not ${ok}    Execute JavaScript    arguments[0].click();    ARGUMENTS    ${el}
+
 Input Text Reliably
     [Documentation]    Type into a field and verify the value landed exactly. Retries the
     ...    real keystroke path (Clear + Input Text) up to 3x to survive dropped keystrokes

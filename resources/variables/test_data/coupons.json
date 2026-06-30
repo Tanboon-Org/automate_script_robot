@@ -1,23 +1,34 @@
 [
   {
     "key": "valid",
-    "code": "OWNER_SUPPLIED_VALID",
+    "code": "DISCOUNT10",
     "expectedDiscount": null,
     "scenario": "valid",
-    "notes": "Replace with a real valid code from the site owner. TC-CHK-07 is test.fixme() until supplied."
+    "_status": "todo",
+    "notes": "TD-07. _status=todo: code ยังชนกับ 'used' (DISCOUNT10) — ต้องขอ valid code ที่ loginUser ยังไม่เคยใช้จาก dev ก่อน TC-PROMO-01-R/09 ถึงจะ assert ส่วนลดได้"
   },
   {
     "key": "invalid",
-    "code": "INVALID123",
+    "code": "INVALIDXXXX",
     "expectedDiscount": 0,
     "scenario": "invalid",
-    "notes": "Deterministic invalid code — always rejected."
+    "_status": "ready",
+    "notes": "TD-08. Deterministic invalid code — ไม่มีจริง → 'ไม่พบรหัสส่วนลด'"
   },
   {
     "key": "expired",
-    "code": "OWNER_SUPPLIED_EXPIRED",
+    "code": "WD12",
     "expectedDiscount": 0,
     "scenario": "expired",
-    "notes": "Replace with a real expired code from the site owner. TC-CHK-07 is test.fixme() until supplied."
+    "_status": "ready",
+    "notes": "TD-08. คูปองหมดอายุจริงบน staging → reject"
+  },
+  {
+    "key": "used",
+    "code": "DISCOUNT10",
+    "expectedDiscount": 0,
+    "scenario": "used",
+    "_status": "ready",
+    "notes": "TD-09. loginUser (inoobeam) เคยใช้ code นี้แล้ว → 'ท่านได้ใช้รหัสส่วนลด ... ไปแล้วค่ะ'"
   }
 ]
