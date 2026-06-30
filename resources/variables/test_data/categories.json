@@ -35,5 +35,12 @@
     "url": "/wreath-donate/",
     "minExpectedItems": 0,
     "notes": "หน้า render ได้แต่บางช่วงไม่มีสินค้า tag บริจาค — smoke เช็คแค่ไม่ 404"
+  },
+  {
+    "key": "wizard_special",
+    "label": "แนะนำเฉพาะคุณ",
+    "url": "/products-special/",
+    "minExpectedItems": 1,
+    "notes": "wizard listing (products-special). cookie wizard_answers ไม่ได้ assert (รอ mapping TD-37)"
   }
 ]

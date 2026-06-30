@@ -68,3 +68,11 @@ Assert Title Contains Code
     [Arguments]    ${code}
     ${title}=    Get Title
     Should Match Regexp    ${title}    (?i)${code}
+
+Assert Promotion Price Shown
+    [Documentation]    TC-DISC-08 — สินค้าที่มีโปร: มีราคาตัดทอน (line-through) คู่กับราคาขาย.
+    ...    ตรวจจาก computed style (text-decoration: line-through) ของ element ที่มี ฿ —
+    ...    ทนต่อการเปลี่ยน class มากกว่าการ match ชื่อ class ตรง ๆ.
+    ${has_struck}=    Execute Javascript
+    ...    return [...document.querySelectorAll('*')].some(e=>getComputedStyle(e).textDecorationLine.includes('line-through') && /฿/.test(e.innerText));
+    Should Be True    ${has_struck}    ไม่พบราคาตัดทอน (line-through) บนหน้าสินค้าที่ควรมีโปรโมชั่น
