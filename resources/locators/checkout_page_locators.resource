@@ -40,6 +40,8 @@ ${MSG_COUPON_ALREADY_USED}      ได้ใช้รหัสส่วนลด
 # Message-card validation (validateMessageCards) — shown in the checkout checklist when a
 # wreath's card is not filled. Used by TC-CHK-13 / TC-CARD-05.
 ${MSG_CARD_INCOMPLETE}          กรุณากรอกข้อความป้ายให้ครบทุกพวงหรีด
+# Ribbon/message-card modal: line 1 required (save disabled until filled). Used by TC-CARD-03.
+${MSG_CARD_LINE1_REQUIRED}      กรุณาระบุ "ข้อความบรรทัดที่ 1"
 ${CHK_ADD_NEW_USER}        css:input[name="add_to_new_user"]
 ${CHK_PRIVACY_CHECKBOX}    css:input[name="privacy_policy_accepted"]
 ${CHK_EDM_CHECKBOX}        css:input[name="accept_for_edm"]
