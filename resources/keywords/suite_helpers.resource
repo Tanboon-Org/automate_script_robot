@@ -24,6 +24,27 @@ Setup Checkout
     Go To Cart
     Proceed To Checkout From Cart
 
+Login As Test User
+    [Documentation]    Log in as the verified test user (TD-30) and confirm success → lands on
+    ...    /user-infos. Used by the A6/A7 user-infos suites.
+    ${user}=    Load Test Data    user    login
+    Login With    ${user}[email]    ${user}[password]
+    Assert Login Succeeded
+    RETURN    ${user}
+
+Setup Checkout Two Pwang
+    [Documentation]    Add H014, bump quantity to 2 (→ 2 พวง), reach /checkout/. Used by
+    ...    TC-CHK-13 (message-card count rule).
+    Open WNW Browser
+    Dismiss Cookie
+    ${product}=    Load Test Data    product    h014
+    Open Product By Data    ${product}
+    Add To Cart
+    Go To Cart
+    Increase Cart Quantity    1
+    Sleep    ${TIMEOUTS}[CART_PERSIST]s
+    Proceed To Checkout From Cart
+
 Setup Purchase Loop Test
     [Documentation]    beforeEach gate: skip on PROD unless ALLOW_PROD_ORDER=true; then open browser.
     IF    '${ENV}' == 'prod' and not ${ALLOW_PROD_ORDER}
@@ -36,3 +57,51 @@ Setup Tracking
     Open WNW Browser
     Dismiss Cookie
     Open Tracking Page
+
+Setup Auth Test
+    [Documentation]    beforeEach for Account/Auth suites: open browser at site root and
+    ...    dismiss the cookie banner so it never overlaps the auth modal trigger.
+    Open WNW Browser
+    Dismiss Cookie
+
+# ── Coupon / promotion (TC-PROMO-*) ───────────────────────────────────────────
+Prepare Checkout For Coupon
+    [Documentation]    Fill the minimum a coupon needs before it can be applied — temple +
+    ...    a soonest date/time. The apply button is gated behind a delivery date
+    ...    (note "เลือกวันจัดส่งก่อน"), so without this the click is a no-op.
+    ${temple}=    Load Test Data    temple    wat_arun_bkk
+    Select Temple With Hall    ${temple}
+    Pick Delivery Date And Time
+
+Setup Coupon Checkout As Guest
+    [Documentation]    beforeEach: open browser, then (guest, NOT logged in) add H014, reach
+    ...    /checkout/, ready the coupon field. Used by TC-PROMO-04 — applying any coupon must
+    ...    demand login first.
+    Open WNW Browser
+    Dismiss Cookie
+    ${product}=    Load Test Data    product    h014
+    Open Product By Data    ${product}
+    Add To Cart
+    Go To Cart
+    Proceed To Checkout From Cart
+    Prepare Checkout For Coupon
+
+Setup Coupon Checkout As Login User
+    [Documentation]    beforeEach for login-required coupon cases (02-R/03-R/07). Coupons need
+    ...    login, and the logged-in cart is server-side, so add H014 as a GUEST first, THEN log
+    ...    in — login merges the guest cart (synUserCart, see TC-LOGIN-07). Then reach /checkout/
+    ...    and ready the coupon field.
+    Open WNW Browser
+    Dismiss Cookie
+    ${product}=    Load Test Data    product    h014
+    Open Product By Data    ${product}
+    Add To Cart
+    ${user}=    Load Test Data    user    login
+    Login With    ${user}[email]    ${user}[password]
+    Assert Login Succeeded
+    Go To Cart
+    # Post-login cart is server-side and renders after the synUserCart round-trip; wait for the
+    # "ซื้อทันที" button before clicking (the shared Proceed keyword clicks without waiting).
+    Wait Until Any Element Visible    ${CART_CHECKOUT_BUTTON}    ${TIMEOUTS}[NAVIGATION]
+    Proceed To Checkout From Cart
+    Prepare Checkout For Coupon

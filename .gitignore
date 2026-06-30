@@ -9,3 +9,8 @@ selenium-screenshot-*.png
 # session backups / strays (not part of the suite)
 *.bak.xlsx
 README copy.md
+
+# Robot run artifacts written to repo root (use --outputdir results/ instead)
+/log.html
+/output.xml
+/report.html

@@ -48,6 +48,49 @@ Pick Delivery Date
     Wait Until Element Is Visible    ${cell}    ${TIMEOUTS}[DEFAULT]
     Click Element    ${cell}
 
+# ── Delivery-date boundary checks (TC-CHK-09/11) ──────────────────────────────
+Open Delivery Calendar
+    [Documentation]    Open the react-datepicker popup (idempotent-ish: clicks the field).
+    Click Element    ${CHK_DELIVERY_DATE}
+    Wait Until Page Contains Element    css:div.react-datepicker    ${TIMEOUTS}[DEFAULT]
+
+Navigate Calendar To
+    [Documentation]    Click "next month" until a day cell whose aria-label contains
+    ...    ${date_part} (e.g. "July 31st, 2026") is rendered. The target day may be enabled
+    ...    or disabled — we only need it present to read its state.
+    [Arguments]    ${date_part}    ${max_clicks}=14
+    FOR    ${i}    IN RANGE    ${max_clicks}
+        ${here}=    Run Keyword And Return Status    Page Should Contain Element
+        ...    xpath=//div[contains(@class,'react-datepicker__day') and contains(@aria-label,'${date_part}')]
+        IF    ${here}    RETURN
+        Click Element    css:button.react-datepicker__navigation--next
+        Sleep    ${TIMEOUTS}[ANIMATION]s
+    END
+    Fail    ไม่พบช่องวันที่ '${date_part}' ในปฏิทินภายใน ${max_clicks} เดือน
+
+Get Delivery Day Class
+    [Arguments]    ${date_part}
+    Open Delivery Calendar
+    Navigate Calendar To    ${date_part}
+    ${cls}=    Get Element Attribute
+    ...    xpath=//div[contains(@class,'react-datepicker__day') and contains(@aria-label,'${date_part}')]    class
+    RETURN    ${cls}
+
+Assert Delivery Day Disabled
+    [Documentation]    The calendar cell for ${date_part} must be NOT selectable
+    ...    (react-datepicker__day--disabled).
+    [Arguments]    ${date_part}
+    ${cls}=    Get Delivery Day Class    ${date_part}
+    Should Contain    ${cls}    react-datepicker__day--disabled
+    ...    วันที่ '${date_part}' ควรเลือกไม่ได้ (เกินกฎจัดส่ง) แต่ปฏิทินยังเปิดให้เลือก
+
+Assert Delivery Day Enabled
+    [Documentation]    The calendar cell for ${date_part} must be selectable.
+    [Arguments]    ${date_part}
+    ${cls}=    Get Delivery Day Class    ${date_part}
+    Should Not Contain    ${cls}    react-datepicker__day--disabled
+    ...    วันที่ '${date_part}' ควรเลือกได้ (อยู่ในกรอบจัดส่ง) แต่ปฏิทิน disable
+
 Pick Soonest Delivery Date
     [Documentation]    CheckoutPage.pickSoonestDeliveryDate() — click the first enabled
     ...    day cell; fall back to the computed next-Saturday label. Returns the aria-label.
@@ -225,9 +268,20 @@ Assert Free Shipping On Checkout
     Wait Until Any Element Visible    ${CHK_FREE_SHIPPING}    ${TIMEOUTS}[DEFAULT]
 
 Apply Discount Code
+    [Documentation]    Type the code into the visible discount field and click ยืนยัน. Targets
+    ...    the first VISIBLE match — the union locator also matches a hidden duplicate that
+    ...    is not interactable. Empty ${code} just clears (for the "กรุณากรอกรหัส" case).
     [Arguments]    ${code}
-    Input Text    ${CHK_DISCOUNT_INPUT}    ${code}
-    Click Element    ${CHK_DISCOUNT_CONFIRM}
+    Input Into First Visible    ${CHK_DISCOUNT_INPUT}    ${code}
+    Click First Visible Element    ${CHK_DISCOUNT_CONFIRM}
+
+Apply Coupon And Expect Error
+    [Documentation]    Enter a coupon code, click ยืนยัน, then assert the rejection message
+    ...    appears anywhere on the page (validate_coupon errors render in a toast/modal whose
+    ...    DOM position is not stable, so match by Thai text fragment).
+    [Arguments]    ${code}    ${expected_fragment}
+    Apply Discount Code    ${code}
+    Wait Until Page Contains    ${expected_fragment}    ${TIMEOUTS}[DEFAULT]
 
 # ── Order summary total (card +3%) ────────────────────────────────────────────
 Get Order Summary Total Amount

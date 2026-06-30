@@ -30,6 +30,16 @@ ${CHK_BUYER_EMAIL}         xpath=(//input[@name='email'] | //input[contains(@pla
 ${CHK_BUYER_PHONE}         xpath=(//input[@name='customer_phone_number'] | //input[@name='phone'] | //input[contains(@placeholder,'เบอร์โทร')])[1]
 ${CHK_DISCOUNT_INPUT}      xpath=//input[@name='discount_code'] | //input[contains(@placeholder,'รหัสส่วนลด')]
 ${CHK_DISCOUNT_CONFIRM}    xpath=//button[contains(.,'ยืนยัน')]
+# Coupon apply result — assert by stable Thai fragment (verified live on staging).
+# Guest sees a static FE hint (not the backend's "ต้องล๊อคอิน..." text); a guest can't even
+# enter a code. The rest render after clicking ยืนยัน while logged in.
+${MSG_COUPON_LOGIN_REQUIRED}    ล็อกอินเพื่อใส่รหัสส่วนลด
+${MSG_COUPON_NOT_FOUND}         ไม่พบรหัสส่วนลด
+${MSG_COUPON_EMPTY}             กรุณากรอกรหัสส่วนลด
+${MSG_COUPON_ALREADY_USED}      ได้ใช้รหัสส่วนลด
+# Message-card validation (validateMessageCards) — shown in the checkout checklist when a
+# wreath's card is not filled. Used by TC-CHK-13 / TC-CARD-05.
+${MSG_CARD_INCOMPLETE}          กรุณากรอกข้อความป้ายให้ครบทุกพวงหรีด
 ${CHK_ADD_NEW_USER}        css:input[name="add_to_new_user"]
 ${CHK_PRIVACY_CHECKBOX}    css:input[name="privacy_policy_accepted"]
 ${CHK_EDM_CHECKBOX}        css:input[name="accept_for_edm"]

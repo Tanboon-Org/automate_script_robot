@@ -97,6 +97,23 @@ def next_delivery_aria_label(offset_days=4, now=None) -> str:
     return _format_aria_label(target)
 
 
+def relative_aria_label(offset_days, now=None) -> str:
+    """Aria-label for the calendar cell at (Bangkok today + offset_days).
+    offset_days may be negative (e.g. -1 = yesterday, 31 = today+31). Used by the
+    delivery-datetime boundary tests (TC-CHK-09/10/11)."""
+    target = _bangkok_today(now) + timedelta(days=int(offset_days))
+    return _format_aria_label(target)
+
+
+def aria_date_part(offset_days, now=None) -> str:
+    """The prefix-free date portion of a calendar cell aria-label, e.g.
+    "June 29th, 2026". Both enabled ("Choose <date>") and disabled
+    ("Not available <date>") cells carry this, so it is the stable substring to
+    locate a specific day regardless of its enabled state."""
+    target = _bangkok_today(now) + timedelta(days=int(offset_days))
+    return f"{target.strftime('%B')} {_ordinal(target.day)}, {target.year}"
+
+
 # ───────────────────────────── data loader (dataLoader.ts) ────────────────────
 
 
@@ -126,6 +143,8 @@ _ENTITY_FILES = {
     "coupons": "coupons.json",
     "card": "cards.json",
     "cards": "cards.json",
+    "user": "users.json",
+    "users": "users.json",
 }
 
 

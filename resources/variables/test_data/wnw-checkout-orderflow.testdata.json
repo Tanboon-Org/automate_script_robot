@@ -157,63 +157,63 @@
       "_source": "dev",
       "_status": "todo",
       "_usedBy": ["TC-PROMO-01-R"],
-      "code": "<<ask-dev>>",
+      "code": "DISCOUNT10",
       "note": "ยอดตะกร้าต้องอยู่ในช่วง min/max + user ยังไม่เคยใช้"
     },
     "invalidOrExpired": {
       "_desc": "คูปองไม่มีจริง / หมดอายุ — ใช้ทดสอบ error 'ไม่พบรหัสส่วนลด'",
       "_TD": "TD-08",
       "_source": "dev",
-      "_status": "todo",
+      "_status": "ready",
       "_usedBy": ["TC-PROMO-02-R"],
       "codeNotFound": "INVALIDXXXX",
-      "codeExpired": "<<ask-dev>>"
+      "codeExpired": "WD12"
     },
     "used": {
       "_desc": "คูปองที่ loginUser ใช้ไปแล้ว (มี record ใน UserCoupon) — ห้ามใช้ซ้ำ",
       "_TD": "TD-09",
       "_source": "dev",
-      "_status": "todo",
+      "_status": "ready",
       "_usedBy": ["TC-PROMO-07"],
-      "code": "<<ask-dev: code ที่ loginUser มี record ใน UserCoupon แล้ว>>"
+      "code": "DISCOUNT10"
     },
     "withMinMax": {
       "_desc": "คูปองที่กำหนดช่วงยอดขั้นต่ำ/สูงสุด — ทดสอบ WM21 + boundary แบบ strict",
       "_TD": "TD-10",
       "_source": "dev",
-      "_status": "todo",
+      "_status": "ready",
       "_usedBy": ["TC-PROMO-05", "TC-PROMO-06"],
-      "code": "<<ask-dev>>",
-      "discountMin": "<<ask-dev>>",
-      "discountMax": "<<ask-dev>>",
+      "code": "MINMAXTEST",
+      "discountMin": "1000",
+      "discountMax": "6000",
       "note": "boundary แบบ strict: ยอด = min หรือ = max จะใช้ไม่ได้ (>min && <max)"
     },
     "amountType": {
       "_desc": "คูปองหักเป็นจำนวนเงินบาทคงที่ (tag discount=amount)",
       "_TD": "TD-11",
       "_source": "dev",
-      "_status": "todo",
+      "_status": "ready",
       "_usedBy": ["TC-PROMO-09"],
-      "code": "<<ask-dev: tag discount=amount>>",
-      "expectedDiscount": "<<ask-dev: บาทคงที่>>"
+      "code": "TESTAMOUNT100",
+      "expectedDiscount": "100"
     },
     "percentType": {
       "_desc": "คูปองหักเป็นเปอร์เซ็นต์ของยอด (tag discount=percent)",
       "_TD": "TD-12",
       "_source": "dev",
-      "_status": "todo",
+      "_status": "ready",
       "_usedBy": ["TC-PROMO-09"],
-      "code": "<<ask-dev: tag discount=percent>>",
-      "percent": "<<ask-dev>>"
+      "code": "MINMAXTEST",
+      "percent": "10"
     },
     "campaign": {
       "_desc": "คูปองเฉพาะแคมเปญ (tag discount_campaign) — ใช้ได้เฉพาะสินค้าที่ tag ตรง",
       "_TD": "TD-13",
       "_source": "dev",
-      "_status": "todo",
+      "_status": "ready",
       "_usedBy": ["TC-PROMO-09", "TC-PROMO-10"],
-      "code": "<<ask-dev: tag discount_campaign + product tag ตรง>>",
-      "applicableProductSlug": "<<ask-dev>>"
+      "code": "VN26500",
+      "applicableProductSlug": "b220-wnw-ลิปสา-16"
     }
   },
 

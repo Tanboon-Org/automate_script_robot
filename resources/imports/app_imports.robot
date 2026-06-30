@@ -19,6 +19,7 @@ Resource         ../keywords/feature_keywords/order_feature_keywords.resource
 # Page keyword layer (header is not pulled in by a feature file above, import explicitly).
 Resource         ../keywords/page_keywords/header_component_keywords.resource
 Resource         ../keywords/page_keywords/card2c2p_page_keywords.resource
+Resource         ../keywords/page_keywords/auth_page_keywords.resource
 
 *** Keywords ***
 Open WNW Site
