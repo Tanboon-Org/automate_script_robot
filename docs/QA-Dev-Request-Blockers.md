@@ -49,6 +49,7 @@
 | 3.5 | **forget-password ไม่กันกดซ้ำจริง** — ปุ่มเปลี่ยน text เป็น "กำลังดำเนินการ" แต่ `disabled=false` | ปุ่มควร disable ระหว่างส่ง | `forget-password/page.tsx` |
 | 3.6 | **(typo?)** ปุ่มตอนส่ง forget-password ขึ้นข้อความ **"กำลังดดำเนินการ"** (มี ด ซ้ำ) | "กำลังดำเนินการ" | เดียวกัน |
 | 3.7 | **NotFound markup ติดมาใน HTML ทุกหน้า** (ซ่อนอยู่) — ทำให้เช็ค 404 จาก page source ไม่ได้ ต้องใช้ visible text | (ไม่ใช่ bug ร้ายแรง แต่กระทบ SEO/test) ยืนยันว่าตั้งใจ | dynamic router |
+| 3.8 | **🔴 `POST /api/order` crash 500** — ส่ง cart ที่ slug ไม่มีจริง/ไม่มี field `count` → ได้ `500 {"message":"Undefined array key \"count\"","file":"OrderController.php","line":176}` แทนที่จะ reject สวย ๆ ด้วย "ไม่พบสินค้าตาม slug..." | ควรเป็น 422 + ข้อความ slug rule (ProductSlugExists) ไม่ใช่ PHP 500 | `OrderController.php:176`, `Rules/ProductSlugExists.php` (TC-CHK-12) |
 
 ---
 
