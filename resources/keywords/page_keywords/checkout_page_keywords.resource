@@ -146,6 +146,17 @@ Pick Delivery Date And Time
     Fail    [delivery] ไม่พบวันจัดส่งที่มีเวลาว่างภายใน ${max_days} วัน
 
 # ── Ribbon (ข้อความป้าย) ──────────────────────────────────────────────────────
+Open Ribbon Modal
+    [Documentation]    Click "แก้ไขข้อความป้าย" for the first wreath and wait for the modal.
+    Click Element    ${CHK_RIBBON_EDIT_BTN}
+    Wait Until Element Is Visible    ${CHK_RIBBON_MODAL}    ${TIMEOUTS}[DEFAULT]
+
+Assert Ribbon Save Disabled
+    [Documentation]    TC-CARD-03 — with line 1 empty the save ("ตกลง") button is disabled
+    ...    and the required-line-1 hint is shown.
+    Element Should Be Disabled    ${CHK_RIBBON_CONFIRM}
+    Wait Until Page Contains    ${MSG_CARD_LINE1_REQUIRED}    ${TIMEOUTS}[DEFAULT]
+
 Fill Ribbon
     [Documentation]    CheckoutPage.fillRibbon(data) — N-4: renderer can be slow; confirm,
     ...    wait for the modal to close, retry the confirm once if still open.
