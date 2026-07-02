@@ -14,7 +14,7 @@
 
 | Field | ค่าปัจจุบัน | ต้องการจาก Dev |
 |---|---|---|
-| email | `inoobeam@hotmail.com` | (มีแล้ว) |
+| email | `champw05w@gmail.com` | (มีแล้ว) |
 | password | `123456789` | (มีแล้ว) |
 | **`web_user_token`** | `<<ask-dev>>` | ⬅️ **ขอค่า token จริงของ user นี้** |
 
@@ -105,7 +105,7 @@
 ## 3. Checklist สรุปให้ Dev กรอก (คัดลอกตอบกลับได้เลย)
 
 ```
-[ ] web_user_token ของ inoobeam@hotmail.com = ______________________  (สำคัญสุด)
+[ ] web_user_token ของ champw05w@gmail.com = ______________________  (สำคัญสุด)
 
 [ ] valid.code            = ____________   (min–max: ____–____, ส่วนลด: ______)
 [ ] expired.code          = ____________

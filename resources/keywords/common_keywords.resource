@@ -81,6 +81,56 @@ Assert JsonLd Breadcrumb Present
     ...    return [...document.querySelectorAll('script[type="application/ld+json"]')].some(s => s.textContent.includes('BreadcrumbList'));
     Should Be True    ${ok}    ไม่พบ JSON-LD BreadcrumbList บนหน้าบทความ
 
+Open Route And Settle
+    [Documentation]    Navigate to BASE_URL+${path}, wait for DOM settle, then a short beat so
+    ...    server Set-Cookie / client-side effects land (used by the /line landing routes).
+    [Arguments]    ${path}
+    Go To    ${BASE_URL}${path}
+    Wait For Page Settle
+    Sleep    1s
+
+Cookie Should Be Set
+    [Documentation]    Assert a cookie named ${name} exists and is non-empty; RETURN its value.
+    [Arguments]    ${name}
+    ${c}=    Get Cookie    ${name}
+    Should Not Be Empty    ${c.value}    cookie "${name}" ไม่ถูกตั้งค่า
+    RETURN    ${c.value}
+
+Page Should Have Link To
+    [Documentation]    Assert ≥1 anchor whose href contains ${href_fragment} (e.g. 'tel:',
+    ...    '/line/', '/lineb2b/', 'mailto:').
+    [Arguments]    ${href_fragment}
+    ${count}=    Execute JavaScript
+    ...    return [...document.querySelectorAll('a[href]')].filter(a => (a.getAttribute('href')||'').includes(arguments[0])).length;
+    ...    ARGUMENTS    ${href_fragment}
+    Should Be True    ${count} >= 1    ไม่พบลิงก์ที่ href มี "${href_fragment}"
+
+Assert Image Count At Least
+    [Documentation]    Assert the page renders at least ${min} <img> elements (gallery smoke).
+    [Arguments]    ${min}
+    ${count}=    Execute JavaScript    return document.querySelectorAll('img').length;
+    Should Be True    ${count} >= ${min}    คาดว่ามีรูปอย่างน้อย ${min} แต่พบ ${count}
+
+Assert JsonLd Present
+    [Documentation]    TC-XPERF-02 — หน้ามี structured data อย่างน้อย 1 ก้อน (application/ld+json).
+    ${count}=    Execute JavaScript    return document.querySelectorAll('script[type="application/ld+json"]').length;
+    Should Be True    ${count} >= 1    ไม่พบ JSON-LD (application/ld+json) บนหน้า
+
+Assert Open Graph Present
+    [Documentation]    TC-XPERF-02 — หน้ามี Open Graph meta (og:*) อย่างน้อย 1 ตัว.
+    ${count}=    Execute JavaScript    return document.querySelectorAll('meta[property^="og:"]').length;
+    Should Be True    ${count} >= 1    ไม่พบ Open Graph meta (og:*) บนหน้า
+
+Assert Sitemap Xml
+    [Documentation]    TC-CMS-08 — navigate to a sitemap path and assert it is a valid sitemap
+    ...    document (<sitemapindex> or <urlset>) carrying at least one <loc>.
+    [Arguments]    ${path}
+    Go To    ${BASE_URL}${path}
+    Wait For Page Settle
+    ${src}=    Get Source
+    Should Match Regexp    ${src}    (?s)(sitemapindex|urlset)
+    Should Contain    ${src}    loc
+
 Assert Listing Has Links
     [Documentation]    Smoke: the current page shows at least one link under ${prefix}
     ...    (e.g. /บทความ/ items on the article listing).
