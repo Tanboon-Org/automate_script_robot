@@ -10,6 +10,11 @@ ${PDP_FREE_SHIPPING}       xpath=//*[contains(text(),'ส่งฟรี')]
 # FIX 1: main add-to-cart CTA is :not(.w-full); recommended-product CTAs are w-full.
 ${PDP_ADD_TO_CART}         xpath=(//button[not(contains(@class,'w-full'))][contains(.,'เพิ่มลงตะกร้า')])[1]
 ${PDP_BUY_NOW}             xpath=(//button[contains(.,'ซื้อทันที')])[1]
+# Non-orderable products (allow_add_to_cart=false): the buy CTA is replaced by a LINE
+# contact link in the product action area (ProductButton.tsx:131-150). Verified live on d040:
+# <a href=".../line/">สั่งสินค้า พื้นที่ต่างจังหวัดกดแอดไลน์</a>. Match by that distinctive
+# text so it does NOT collide with the site-wide @LINE link in the header/footer.
+${PDP_LINE_CONTACT}        xpath=//a[contains(@href,'/line/')][contains(.,'กดแอดไลน์') or contains(.,'ต่างจังหวัด')]
 ${PDP_CART_BADGE}          css:header a[href="/cart/"]
 # All cart links (mobile + desktop) — read MAX numeric badge across them.
 ${PDP_CART_LINK_ANY}       css:a[href="/cart/"]

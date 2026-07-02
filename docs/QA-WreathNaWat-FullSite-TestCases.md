@@ -194,7 +194,7 @@
 | TC-CMS-01 | บทความ listing + filter | UI | Functional | Medium | TD-38 | เปิด `/บทความ`, เลือก category | filter ทำงาน, pagination 20/หน้า | `article/page.tsx` | Not Run |
 | TC-CMS-02 | บทความ detail | UI | Smoke | Low | TD-38 | เปิด `/บทความ/[slug]` | render เนื้อหา + JSON-LD BreadcrumbList | `article/[slug]` | Not Run |
 | TC-CMS-03 | ผู้เขียน | UI | Smoke | Low | TD-38 | เปิด `/ผู้เขียน/[slug]` | บทความตาม author | `author-article/[slug]` | Not Run |
-| TC-CMS-04 | service pages static | UI | Smoke | Low | — | เปิด service-funeral/-crematory/-pet/-relics, all-service | 200, มี title/meta/og/canonical, breadcrumb, ข้อมูลติดต่อ | routes | Not Run |
+| TC-CMS-04 | service pages static | UI | Smoke | Low | — | เปิด service-funeral, all-service (crematory/pet/relics ตัดออก — 404 บน staging) | 200, มี title/meta/og/canonical, breadcrumb, ข้อมูลติดต่อ | routes | Not Run |
 | TC-CMS-05 | info pages | UI | Smoke | Low | — | เปิด about-us/how-to-order/faqs/privacy/compensation/flower-shop/review-wreath | render + responsive | routes | Not Run |
 | TC-CMS-06 | dynamic [...slug] router | UI | Functional | Medium | — | เปิด slug ตาม switch ต่างๆ | route ไปหน้าถูก, Thai URL decode | `[...slug]/page.tsx` | Not Run |
 | TC-CMS-07 | slug มั่ว → 404 | UI | Negative | Medium | — | เปิด slug ไม่มีจริง | `NotfoundPage` (404) | เดียวกัน | Not Run |

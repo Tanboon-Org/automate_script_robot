@@ -74,6 +74,22 @@ Assert Content Page Loads
     ${has_canonical}=    Execute JavaScript    return document.querySelector('link[rel="canonical"]') ? true : false;
     Should Be True    ${has_canonical}    ${path} is missing <link rel="canonical">
 
+Assert JsonLd Breadcrumb Present
+    [Documentation]    TC-CMS-02 — the article detail page must embed a JSON-LD BreadcrumbList
+    ...    (<script type="application/ld+json"> containing "BreadcrumbList").
+    ${ok}=    Execute JavaScript
+    ...    return [...document.querySelectorAll('script[type="application/ld+json"]')].some(s => s.textContent.includes('BreadcrumbList'));
+    Should Be True    ${ok}    ไม่พบ JSON-LD BreadcrumbList บนหน้าบทความ
+
+Assert Listing Has Links
+    [Documentation]    Smoke: the current page shows at least one link under ${prefix}
+    ...    (e.g. /บทความ/ items on the article listing).
+    [Arguments]    ${prefix}    ${min}=1
+    ${count}=    Execute JavaScript
+    ...    return [...document.querySelectorAll('a[href]')].filter(a => decodeURIComponent(a.getAttribute('href')||'').includes(arguments[0])).length;
+    ...    ARGUMENTS    ${prefix}
+    Should Be True    ${count} >= ${min}    คาดว่ามีลิงก์อย่างน้อย ${min} ที่ขึ้นต้นด้วย "${prefix}" แต่พบ ${count}
+
 Not Found Marker Should Be Hidden
     [Documentation]    "ไม่พบหน้า" is NOT visible (page rendered real content).
     ${visible}=    Execute JavaScript    return document.body.innerText.includes('ไม่พบหน้า');

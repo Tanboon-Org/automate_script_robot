@@ -33,7 +33,17 @@
 | 2.2 | **service routes** | `/service-crematory`, `/service-pet`, `/service-relics` คืน **404** (ส่วน `/service-funeral`, `/all-service` ปกติ) — slug ที่ถูกคืออะไร? | TC-CMS-04 |
 | 2.3 | **bank_id → payment.type mapping** | comment ในโค้ดสลับชวนสับสน (ดู testdata `payment.bankIdMapping._warning`) ขอ mapping จริง | TC-PAY-06 |
 | 2.4 | **2C2P sandbox** | merchant_id / secret_key / เลขบัตรทดสอบ (sandbox) | TC-PAY-10 / TC-ORD (2c2p) |
-| 2.5 | **tracking microservice** | endpoint/spec ของ `/track-order` (อยู่นอก repo) | TC-TRK กลุ่ม |
+| 2.5 | **tracking microservice** | endpoint/spec ของ `/track-order` (อยู่นอก repo) | TC-TRK กลุ่ม |    https://tracking-all-2023.dev-app-bit.com/api/track-order Parameters ที่ส่งไป (จาก ITrackOrder):
+
+Field	คำอธิบาย
+tracking_id
+Tracking ID
+order_code
+รหัสคำสั่งซื้อ
+phone_or_email_address
+เบอร์โทรหรืออีเมล
+user_agent
+User-Agent จาก request header
 | 2.6 | **location `allow_delivery=false`** | locationId ตัวอย่างที่ตั้ง allow_delivery=false | TC-SHIP-01 |
 
 ---
@@ -56,19 +66,17 @@
 ## 4. Checklist สำหรับ Dev (คัดลอกตอบกลับได้)
 
 ```
-[ ] web_user_token (inoobeam@hotmail.com) = ______________________
-[ ] coupon valid (ยังไม่ถูกใช้)           = __________  (min–max ____–____, ส่วนลด ______)
-[ ] coupon expired (reject จริง)          = __________
-[ ] coupon min/max (min ≤ ยอดที่จัดได้)   = __________  (min ____ / max ____)
-[ ] user ที่มีออเดอร์ (TD-39)             = email __________ / set orders ให้ yes-no
-[ ] article slug / author slug (TD-38)    = __________ / __________
+[ ] web_user_token (inoobeam@hotmail.com) = 1295|KoaWKNaRsZgj1jJfIhQzym29rNRE7pLoKTLlcrzd95aa314a
+[ ] coupon valid (ยังไม่ถูกใช้)           = TESTDISCOUNNT01  (min–max 1000–ไม่มีกำหนด, ส่วนลด 10%)
+[ ] coupon expired (reject จริง)          = TESTEXPIRE01
+[ ] coupon min/max (min ≤ ยอดที่จัดได้)   = MINMAXTEST  (min 2000 / max 6000)
+[ ] user ที่มีออเดอร์ (TD-39)             =  set orders ให้ yes
+[ ] article slug / author slug (TD-38)    = https://wnw2025-frontend.dev-app-bit.com/%E0%B8%9A%E0%B8%97%E0%B8%84%E0%B8%A7%E0%B8%B2%E0%B8%A1/%E0%B8%A3%E0%B8%B9%E0%B9%89%E0%B8%A5%E0%B8%B6%E0%B8%81%E0%B9%80%E0%B8%A3%E0%B8%B7%E0%B9%88%E0%B8%AD%E0%B8%87%E0%B8%9E%E0%B8%A7%E0%B8%87%E0%B8%AB%E0%B8%A3%E0%B8%B5%E0%B8%94/%E0%B8%84%E0%B8%B3%E0%B9%84%E0%B8%A7%E0%B9%89%E0%B8%AD%E0%B8%B2%E0%B8%A5%E0%B8%B1%E0%B8%A2-%E0%B8%AA%E0%B8%B3%E0%B8%AB%E0%B8%A3%E0%B8%B1%E0%B8%9A%E0%B8%9E%E0%B8%A7%E0%B8%87%E0%B8%AB%E0%B8%A3%E0%B8%B5%E0%B8%94/ /ไม่มีนะ
 [ ] โลโก้ทดสอบ (TD-35)                     = แนบไฟล์ ใหญ่/ปกติ/non-image
-[ ] slug สินค้า allow_add_to_cart=false   = __________
-[ ] unverified user (TD-31)               = email __________ / pass __________
-[ ] เปลี่ยนรหัสผ่านใน /user-infos เปิดยังไง = ______________________
-[ ] service route slug (crematory/pet/relics) = ______________________
-[ ] bank_id→type mapping / 2C2P sandbox   = ______________________
-
+[ ] slug สินค้า allow_add_to_cart=false   = d040-wnw-ดอนญ่ารำลึก
+[ ] unverified user (TD-31)               = email testsuer@gmail.com / pass 123456789_Sno
+[ ] เปลี่ยนรหัสผ่านใน /user-infos เปิดยังไง = ต้องส่งรหัสยืนยันเข้า email จาก https://wnw2025-frontend.dev-app-bit.com/forget-password/
+[ ] bank_id→type mapping / 2C2P sandbox   = ตอนนี้ระบบไม่รองรับการใช้ card test ข้ามไปก่อน
 ยืนยัน bug (3.x):
 [ ] sort ควร reflect URL + เรียงจริง?           yes / no / known-issue
 [ ] keyword search ควรกรอง?                      yes / no / known-issue
