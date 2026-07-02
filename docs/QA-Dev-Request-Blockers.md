@@ -60,6 +60,7 @@ User-Agent จาก request header
 | 3.6 | **(typo?)** ปุ่มตอนส่ง forget-password ขึ้นข้อความ **"กำลังดดำเนินการ"** (มี ด ซ้ำ) | "กำลังดำเนินการ" | เดียวกัน |
 | 3.7 | **NotFound markup ติดมาใน HTML ทุกหน้า** (ซ่อนอยู่) — ทำให้เช็ค 404 จาก page source ไม่ได้ ต้องใช้ visible text | (ไม่ใช่ bug ร้ายแรง แต่กระทบ SEO/test) ยืนยันว่าตั้งใจ | dynamic router |
 | 3.8 | **🔴 `POST /api/order` crash 500** — ส่ง cart ที่ slug ไม่มีจริง/ไม่มี field `count` → ได้ `500 {"message":"Undefined array key \"count\"","file":"OrderController.php","line":176}` แทนที่จะ reject สวย ๆ ด้วย "ไม่พบสินค้าตาม slug..." | ควรเป็น 422 + ข้อความ slug rule (ProductSlugExists) ไม่ใช่ PHP 500 | `OrderController.php:176`, `Rules/ProductSlugExists.php` (TC-CHK-12) |
+| 3.9 | **🔴 guest→login cart merge พัง** — เพิ่มสินค้าตอนเป็น guest แล้ว login (inoobeam) → ตะกร้า**ว่าง** ("ไม่มีสินค้า") สินค้าที่เพิ่งเพิ่มหายหมด (verify ด้วย Selenium 2026-07-02: login สำเร็จแต่ cart empty). กระทบ TC-PROMO-02-R/03-R/05/07 + **TC-LOGIN-07** (เคสที่เทสต์ merge โดยตรง). Workaround ใน automate: setup coupon เปลี่ยนเป็น login-ก่อน-แล้วค่อย-add (เลี่ยง merge) | guest cart ต้อง merge เข้า user cart ตอน login | `synUserCart` (TC-LOGIN-07) |
 
 ---
 
