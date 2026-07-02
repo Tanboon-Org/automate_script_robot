@@ -108,6 +108,9 @@ Setup Coupon Checkout As Login User
     ${user}=    Load Test Data    user    login
     Login With    ${user}[email]    ${user}[password]
     Assert Login Succeeded
+    # login user's cart is server-side and persists across runs — clear it first so coupon
+    # min/max cases start from a KNOWN cart (exactly 1×H014 = ฿1,599), not accumulated leftovers.
+    Clear Cart
     ${product}=    Load Test Data    product    h014
     Open Product By Data    ${product}
     Add To Cart

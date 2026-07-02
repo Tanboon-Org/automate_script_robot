@@ -38,6 +38,19 @@ Assert Cart Empty
     [Documentation]    CartPage.assertEmpty() — "ยังไม่มีสินค้าในตะกร้า".
     Wait Until Element Is Visible    ${CART_EMPTY_MESSAGE}    ${TIMEOUTS}[DEFAULT]
 
+Clear Cart
+    [Documentation]    ล้างสินค้าทั้งหมดในตะกร้า (กด [−] ทีละชิ้นจนว่าง). ใช้ให้เคส coupon ที่
+    ...    login แล้วเริ่มจากตะกร้าที่รู้ปริมาณแน่นอน — กัน server-side cart ของ login user
+    ...    สะสมข้ามรัน (login-first setup จะ add สะสมทุกครั้ง). Idempotent: cart ว่างอยู่แล้วก็ผ่าน.
+    Open Cart Page
+    FOR    ${i}    IN RANGE    25
+        ${empty}=    Run Keyword And Return Status    Element Should Be Visible    ${CART_EMPTY_MESSAGE}
+        IF    ${empty}    RETURN
+        ${ok}=    Run Keyword And Return Status    Click Element    ${CART_QTY_DECREASE}
+        IF    not ${ok}    RETURN
+        Sleep    ${TIMEOUTS}[ANIMATION]s
+    END
+
 Assert Discount Code Note Visible
     Wait Until Element Is Visible    ${CART_DISCOUNT_NOTE}    ${TIMEOUTS}[DEFAULT]
 
