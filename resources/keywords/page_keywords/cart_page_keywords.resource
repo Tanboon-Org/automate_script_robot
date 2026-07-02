@@ -43,11 +43,11 @@ Clear Cart
     ...    login แล้วเริ่มจากตะกร้าที่รู้ปริมาณแน่นอน — กัน server-side cart ของ login user
     ...    สะสมข้ามรัน (login-first setup จะ add สะสมทุกครั้ง). Idempotent: cart ว่างอยู่แล้วก็ผ่าน.
     Open Cart Page
-    FOR    ${i}    IN RANGE    25
+    FOR    ${i}    IN RANGE    40
         ${empty}=    Run Keyword And Return Status    Element Should Be Visible    ${CART_EMPTY_MESSAGE}
         IF    ${empty}    RETURN
-        ${ok}=    Run Keyword And Return Status    Click Element    ${CART_QTY_DECREASE}
-        IF    not ${ok}    RETURN
+        # Re-locate + ignore transient staleness; keep draining (do NOT bail on one bad click).
+        Run Keyword And Ignore Error    Click Element    ${CART_QTY_DECREASE}
         Sleep    ${TIMEOUTS}[ANIMATION]s
     END
 
