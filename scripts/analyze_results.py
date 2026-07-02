@@ -101,6 +101,18 @@ SYSTEM = (
 )
 
 
+def is_quota_error(e: Exception) -> bool:
+    """โควตา Gemini free tier หมด -> HTTP 429 / RESOURCE_EXHAUSTED
+
+    google-genai โยน APIError ที่มี .code == 429; เผื่อ SDK เวอร์ชันอื่นด้วยการ
+    เช็กข้อความประกอบ (429 / RESOURCE_EXHAUSTED / quota / rate limit)
+    """
+    if getattr(e, "code", None) == 429 or getattr(e, "status_code", None) == 429:
+        return True
+    text = f"{getattr(e, 'status', '')} {e}".lower()
+    return any(k in text for k in ("resource_exhausted", "429", "quota", "rate limit", "ratelimit"))
+
+
 def analyze(prompt: str) -> str:
     from google import genai
     from google.genai import types
@@ -139,7 +151,13 @@ def main() -> int:
         analysis = analyze(prompt)
         write_out(analysis or "_AI ไม่ได้ส่งข้อความกลับ (อาจโดน safety filter)_")
     except Exception as e:  # noqa: BLE001
-        write_out(f"_เรียก AI วิเคราะห์ไม่สำเร็จ ({type(e).__name__}: {e}) — ข้ามไปก่อน_")
+        if is_quota_error(e):
+            write_out(
+                "⚠️ **API key หมดโควตาฟรีของรอบนี้แล้ว** — ข้ามการวิเคราะห์ด้วย AI รอบนี้ "
+                "(โควตา Gemini free tier จะรีเซ็ตตามรอบ แล้วรอบถัดไปจะวิเคราะห์ให้ตามปกติ)"
+            )
+        else:
+            write_out(f"_เรียก AI วิเคราะห์ไม่สำเร็จ ({type(e).__name__}: {e}) — ข้ามไปก่อน_")
     return 0
 
 
