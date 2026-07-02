@@ -65,7 +65,20 @@ jobs:
             --outputdir results \
             tests
 
-      # รายงาน HTML + log + output.xml + screenshots อยู่ใต้ results/
+      # AI (Gemini free tier) อ่าน results/output.xml แล้ววิเคราะห์ผลรัน -> results/ai_analysis.md
+      # step นี้ "ไม่ทำ build พัง": ไม่มี key / เรียก API ไม่ได้ จะเขียนหมายเหตุแล้ว exit 0
+      # วางก่อน upload เพื่อให้ ai_analysis.md ถูกเก็บใน artifact ด้วย
+      - name: AI analyze results
+        if: ${{ !cancelled() }}
+        env:
+          # GEMINI_API_KEY ฟรีจาก https://aistudio.google.com/apikey (ไม่ต้องผูกบัตร)
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          AI_MODEL: gemini-2.0-flash
+        run: |
+          pip install "google-genai>=1.0"
+          python3 scripts/analyze_results.py
+
+      # รายงาน HTML + log + output.xml + screenshots + ai_analysis.md อยู่ใต้ results/
       - name: Upload Robot Framework report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
@@ -108,10 +121,18 @@ jobs:
             status="✅ PASSED"; color="Good"
           fi
 
+          # ผลวิเคราะห์จาก step "AI analyze results" (ถ้ามี) — ใส่เป็นบล็อกท้ายการ์ด
+          if [ -f results/ai_analysis.md ]; then
+            ai_analysis=$(cat results/ai_analysis.md)
+          else
+            ai_analysis=""
+          fi
+
           payload=$(jq -n \
             --arg status "$status" --arg color "$color" \
             --argjson passed "$passed" --argjson failed "$failed" --argjson skipped "$skipped" \
             --arg repo "$REPO" --arg branch "$BRANCH" --arg actor "$ACTOR" --arg url "$RUN_URL" \
+            --arg ai "$ai_analysis" \
             '{
               type: "message",
               attachments: [{
@@ -120,7 +141,7 @@ jobs:
                   "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
                   type: "AdaptiveCard",
                   version: "1.4",
-                  body: [
+                  body: ([
                     { type: "TextBlock", size: "Large", weight: "Bolder", color: $color,
                       text: ("Robot Framework E2E (staging) — " + $status), wrap: true },
                     { type: "TextBlock", isSubtle: true, spacing: "None", wrap: true,
@@ -130,7 +151,11 @@ jobs:
                       { title: "❌ Failed",  value: ($failed  | tostring) },
                       { title: "⏭️ Skipped", value: ($skipped | tostring) }
                     ]}
-                  ],
+                  ] + (if ($ai | length) > 0 then [
+                    { type: "TextBlock", weight: "Bolder", spacing: "Medium", separator: true,
+                      text: "🤖 AI วิเคราะห์ผลรัน", wrap: true },
+                    { type: "TextBlock", text: $ai, wrap: true }
+                  ] else [] end)),
                   actions: [
                     { type: "Action.OpenUrl", title: "ดูผลรันบน GitHub", url: $url }
                   ]
