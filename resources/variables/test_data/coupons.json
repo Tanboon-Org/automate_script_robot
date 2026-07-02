@@ -1,11 +1,13 @@
 [
   {
     "key": "valid",
-    "code": "DISCOUNT10",
+    "code": "TESTDISCOUNNT01",
     "expectedDiscount": null,
+    "discountPercent": "10",
+    "discountMin": "1000",
     "scenario": "valid",
-    "_status": "todo",
-    "notes": "TD-07. _status=todo: code ยังชนกับ 'used' (DISCOUNT10) — ต้องขอ valid code ที่ loginUser ยังไม่เคยใช้จาก dev ก่อน TC-PROMO-01-R/09 ถึงจะ assert ส่วนลดได้"
+    "_status": "ready",
+    "notes": "TD-07 (TC-PROMO-01-R, validate-only/reusable). Dev: TESTDISCOUNNT01 = หัก 10%, min ฿1000, ไม่มี max. discountPercent ใช้คำนวณ expected = subtotal*10%. ตะกร้าต้อง > ฿1000 (H014 เข้าเงื่อนไข)"
   },
   {
     "key": "invalid",
@@ -17,11 +19,11 @@
   },
   {
     "key": "expired",
-    "code": "WD12",
+    "code": "TESTEXPIRE01",
     "expectedDiscount": 0,
     "scenario": "expired",
-    "_status": "ready",
-    "notes": "TD-08. คูปองหมดอายุจริงบน staging → reject"
+    "_status": "needs-live-check",
+    "notes": "TD-08. Dev: TESTEXPIRE01 = คูปองหมดอายุจริง. _status=needs-live-check: ยัง confirm ข้อความ reject จริงบน staging ไม่ได้ (offline) — ต้องรัน live 1 ครั้งเพื่อจับ fragment ก่อน un-skip TC-PROMO-02-R expired"
   },
   {
     "key": "used",
@@ -30,5 +32,15 @@
     "scenario": "used",
     "_status": "ready",
     "notes": "TD-09. loginUser (inoobeam) เคยใช้ code นี้แล้ว → 'ท่านได้ใช้รหัสส่วนลด ... ไปแล้วค่ะ'"
+  },
+  {
+    "key": "withMinMax",
+    "code": "MINMAXTEST",
+    "discountMin": "2000",
+    "discountMax": "6000",
+    "expectedDiscount": 0,
+    "scenario": "minmax",
+    "_status": "ready",
+    "notes": "TD-10. Dev: MINMAXTEST min ฿2000 / max ฿6000 (strict >min && <max). TC-PROMO-05 = ตะกร้า ฿1599 (1×H014) < min → คูปองไม่หัก. TC-PROMO-06 boundary (=min/=max) ยัง BLOCKED: ไม่มีสินค้าราคาแตะ ฿2000/฿6000 พอดี"
   }
 ]

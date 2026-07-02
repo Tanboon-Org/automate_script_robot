@@ -69,9 +69,9 @@
       "_source": "dev",
       "_status": "ready",
       "_usedBy": ["TC-PROMO-01-R", "TC-PROMO-02-R", "TC-PROMO-05", "TC-PROMO-06", "TC-PROMO-07", "TC-PROMO-10", "TC-AUTH-04", "TC-SESS-01", "TC-CART-07"],
-      "email": "inoobeam@hotmail.com",
-      "password": "123456789",
-      "webUserToken": "<<ask-dev: ใช้กับ coupon / order ที่ login>>"
+      "email": "champw05w@gmail.com",
+      "password": "123456789_Sno",
+      "webUserToken": "1295|KoaWKNaRsZgj1jJfIhQzym29rNRE7pLoKTLlcrzd95aa314a"
     },
     "newRegisterUser": {
       "_desc": "ข้อมูลสมัครสมาชิกใหม่ตอน checkout — email ต้องไม่ซ้ำของเดิม (gen ใหม่ทุกรัน)",
@@ -126,9 +126,9 @@
       "_desc": "สินค้าที่สั่งไม่ได้ (allow_add_to_cart=false) — ต้องซ่อนปุ่ม Buy Now แสดง LINE",
       "_TD": "TD-04",
       "_source": "dev",
-      "_status": "todo",
-      "_usedBy": ["TC-PDP-05"],
-      "slug": "b301-wnw-วลิลา-01-16"
+      "_status": "ready",
+      "_usedBy": ["TC-PDP-05", "TC-DISC-07"],
+      "slug": "d040-wnw-ดอนญ่ารำลึก"
     },
     "invalidSlug": {
       "_desc": "slug ที่ไม่มีจริง — ใช้ทดสอบ order ถูก reject 404 (ProductSlugExists)",
@@ -155,10 +155,12 @@
       "_desc": "คูปองใช้ได้ปกติ — ยอดตะกร้าต้องอยู่ในช่วง min/max และยังไม่เคยใช้",
       "_TD": "TD-07",
       "_source": "dev",
-      "_status": "todo",
+      "_status": "ready",
       "_usedBy": ["TC-PROMO-01-R"],
-      "code": "DISCOUNT10",
-      "note": "ยอดตะกร้าต้องอยู่ในช่วง min/max + user ยังไม่เคยใช้"
+      "code": "TESTDISCOUNNT01",
+      "discountPercent": "10",
+      "discountMin": "1000",
+      "note": "Dev: หัก 10%, min ฿1000, ไม่มี max. ยอดตะกร้าต้อง > ฿1000 + user ยังไม่เคยใช้"
     },
     "invalidOrExpired": {
       "_desc": "คูปองไม่มีจริง / หมดอายุ — ใช้ทดสอบ error 'ไม่พบรหัสส่วนลด'",
@@ -167,7 +169,7 @@
       "_status": "ready",
       "_usedBy": ["TC-PROMO-02-R"],
       "codeNotFound": "INVALIDXXXX",
-      "codeExpired": "WD12"
+      "codeExpired": "TESTEXPIRE01"
     },
     "used": {
       "_desc": "คูปองที่ loginUser ใช้ไปแล้ว (มี record ใน UserCoupon) — ห้ามใช้ซ้ำ",
@@ -184,9 +186,9 @@
       "_status": "ready",
       "_usedBy": ["TC-PROMO-05", "TC-PROMO-06"],
       "code": "MINMAXTEST",
-      "discountMin": "1000",
+      "discountMin": "2000",
       "discountMax": "6000",
-      "note": "boundary แบบ strict: ยอด = min หรือ = max จะใช้ไม่ได้ (>min && <max)"
+      "note": "Dev: min ฿2000 / max ฿6000. boundary แบบ strict: ยอด = min หรือ = max จะใช้ไม่ได้ (>min && <max)"
     },
     "amountType": {
       "_desc": "คูปองหักเป็นจำนวนเงินบาทคงที่ (tag discount=amount)",

@@ -294,6 +294,60 @@ Apply Coupon And Expect Error
     Apply Discount Code    ${code}
     Wait Until Page Contains    ${expected_fragment}    ${TIMEOUTS}[DEFAULT]
 
+Apply Coupon And Assert Discount
+    [Documentation]    Positive VALIDATE-ONLY path (TC-PROMO-01-R): apply a valid coupon and
+    ...    prove the discount lands in the order summary — but DO NOT place the order, so the
+    ...    coupon is never consumed and the case stays re-runnable (logic = 1 coupon / 1 use per
+    ...    user). Hard assertion: grand total drops below the pre-coupon baseline. Extra exact
+    ...    check when the coupon record carries a value: discountPercent (drop == subtotal*%/100)
+    ...    or expectedDiscount (drop == fixed amount), each within a small tolerance.
+    [Arguments]    ${coupon}
+    ${before}=    Get Order Summary Total Amount
+    Should Not Be Equal    ${before}    ${NONE}
+    ...    Order total must be visible before applying the coupon
+    Apply Discount Code    ${coupon}[code]
+    # Discount reflects reactively in the grand total; poll until it falls below the baseline.
+    Wait Until Keyword Succeeds    ${TIMEOUTS}[RENDERER_SLOW]s    0.5s
+    ...    Order Total Should Be Less Than    ${before}
+    # By now the summary has settled — no validate_coupon rejection toast may be present.
+    Page Should Not Contain    ${MSG_COUPON_NOT_FOUND}
+    Page Should Not Contain    ${MSG_COUPON_ALREADY_USED}
+    ${after}=    Get Order Summary Total Amount
+    ${delta}=    Evaluate    ${before} - ${after}
+    ${percent}=    Get From Dictionary    ${coupon}    discountPercent    ${NONE}
+    ${amount}=    Get From Dictionary    ${coupon}    expectedDiscount    ${NONE}
+    IF    $percent is not None
+        ${expected}=    Evaluate    ${before} * ${percent} / 100
+        Amounts Should Be Close    ${delta}    ${expected}    1.0
+        ...    Applied discount should equal ${percent}% of the subtotal
+    ELSE IF    $amount is not None
+        Amounts Should Be Close    ${delta}    ${amount}    0.01
+        ...    Applied discount should equal the coupon's expected amount
+    END
+
+Apply Coupon And Assert No Discount
+    [Documentation]    TC-PROMO-05 — ตะกร้าต่ำกว่า discount_min: ใส่คูปองแล้วยอดรวม "ต้องไม่ลด"
+    ...    (คูปองถูก reject เพราะยอด < min). Validate-only, ไม่กดสั่ง → reusable. หลักฐานที่ทน
+    ...    คือยอดรวมไม่เปลี่ยน (ไม่ต้องพึ่งข้อความ error ที่อาจต่างกันตาม build).
+    [Arguments]    ${code}
+    ${before}=    Get Order Summary Total Amount
+    Should Not Be Equal    ${before}    ${NONE}
+    ...    Order total must be visible before applying the coupon
+    Apply Discount Code    ${code}
+    # Give the summary time to react; then confirm the total did NOT move (no discount applied).
+    Sleep    ${TIMEOUTS}[RENDERER_SLOW]s
+    ${after}=    Get Order Summary Total Amount
+    Amounts Should Be Close    ${after}    ${before}    0.01
+    ...    ยอดรวมต้องไม่เปลี่ยนเมื่อคูปอง < ยอดขั้นต่ำ (คาดว่าถูก reject)
+
+Order Total Should Be Less Than
+    [Documentation]    Assert the current grand total is strictly below ${baseline} (used to
+    ...    confirm a coupon discount took effect without placing the order).
+    [Arguments]    ${baseline}
+    ${now}=    Get Order Summary Total Amount
+    Should Be True    ${now} < ${baseline}
+    ...    Grand total (${now}) should drop below the pre-coupon baseline (${baseline})
+
 # ── Order summary total (card +3%) ────────────────────────────────────────────
 Get Order Summary Total Amount
     [Documentation]    CheckoutPage.getOrderSummaryTotalAmount() — numeric รวมทั้งสิ้น,

@@ -109,7 +109,7 @@
 | TC-PDP-01-R | PDP | แสดงข้อมูล | UI | Positive | High | สินค้ามีอยู่ | `/พวงหรีด/<slug>/` | 1.เปิด PDP 2.ตรวจชื่อ/รหัส/ราคา/ไซซ์/breadcrumb | ข้อมูลตรง listing; ราคาโปร+เดิม; breadcrumb ถูก | `api/product:getProductBySlug` | Not Run | parameterize ต่อหลาย slug |
 | TC-PDP-02 | PDP | Add to Cart | UI | Positive | High | ตะกร้าว่าง | TD-03 | 1.กด "เพิ่มลงตะกร้า" 2.ดูตัวนับ 3.เปิด /cart/ | ตัวนับ +1; สินค้า+ราคาถูกใน cart; toast | `AddItemButton`, `cart.ts` | Not Run | critical |
 | TC-PDP-03-R | PDP | Buy Now | UI | Positive | High | TD-03 `allow_add_to_cart=true` | H015 | 1.กด "ซื้อทันที!" | set `sessionStorage['checkoutProduct']`=สินค้านี้ → ไป `/checkout` ตรง (ข้าม cart) | `ProductButton:88-102` | Not Run | ต่างจาก add-to-cart |
-| TC-PDP-05 | PDP | สั่งไม่ได้ | UI | Negative | Medium | TD-04 | — | 1.เปิด PDP สินค้าสั่งไม่ได้ | ซ่อนปุ่ม Buy Now, แสดงลิงก์ LINE | `ProductButton:131-150` | Not Run | — |
+| TC-PDP-05 | PDP | สั่งไม่ได้ | UI | Negative | Medium | TD-04 | — | 1.เปิด PDP สินค้าสั่งไม่ได้ | ซ่อนปุ่ม Buy Now, แสดงลิงก์ LINE | `ProductButton:131-150` | Pass | — |
 
 ### 5.4 Cart
 
@@ -150,13 +150,13 @@
 
 | Test Case ID | Module | Feature | Test Level | Test Type | Priority | Preconditions | Test Data | Test Steps | Expected Result | Code Evidence | Status | Remark |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| TC-PROMO-01-R | Promotion | คูปองถูกต้อง | Integration | Positive | High | **login (web_user_token)**, สินค้าในเขต, ยอดในช่วง min/max | TD-07 | 1.login 2.checkout 3.กรอกคูปอง 4.Apply | `_infos.error=false`, ส่วนลดถูกหัก, grand total ลด | `validate_coupon:1356` | Not Run | ต้อง login |
-| TC-PROMO-02-R | Promotion | คูปองผิด | Integration | Negative | High | login, checkout | param: ไม่พบ/used/ยอด<min/ยอด>max | 1.กรอกแต่ละโค้ด 2.Apply | error ตรงกรณีจริง (ไม่พบ/WM21/used) | `validate_coupon`, `Controller.php:917-934` | Not Run | parameterize |
-| TC-PROMO-03-R | Promotion | uppercase/ว่าง | Integration | Validation | Medium | login, checkout | "abc123"(จริง ABC123), "" | 1.กรอก 2.Apply | พิมพ์เล็กใช้ได้ (strtoupper); ว่าง→"กรุณากรอกรหัสส่วนลด" | `validate_coupon:1369,1360` | Not Run | — |
+| TC-PROMO-01-R | Promotion | คูปองถูกต้อง | Integration | Positive | High | **login (web_user_token)**, สินค้าในเขต, ยอดในช่วง min/max | TD-07 | 1.login 2.checkout 3.กรอกคูปอง 4.Apply | `_infos.error=false`, ส่วนลดถูกหัก, grand total ลด | `validate_coupon:1356` | Pass | ต้อง login |
+| TC-PROMO-02-R | Promotion | คูปองผิด | Integration | Negative | High | login, checkout | param: ไม่พบ/used/ยอด<min/ยอด>max | 1.กรอกแต่ละโค้ด 2.Apply | error ตรงกรณีจริง (ไม่พบ/WM21/used) | `validate_coupon`, `Controller.php:917-934` | Pass (expired รอ dev) | parameterize |
+| TC-PROMO-03-R | Promotion | uppercase/ว่าง | Integration | Validation | Medium | login, checkout | "abc123"(จริง ABC123), "" | 1.กรอก 2.Apply | พิมพ์เล็กใช้ได้ (strtoupper); ว่าง→"กรุณากรอกรหัสส่วนลด" | `validate_coupon:1369,1360` | Pass | — |
 | TC-PROMO-04 | Promotion | guest ใส่คูปอง | Integration | Permission | High | **ไม่ login** | TD-01 + coupon valid | 1.checkout (guest) 2.กรอกคูปอง 3.Apply | "ต้องล๊อคอินเข้าสู่ระบบก่อนค่ะ" | `validate_coupon:1416-1424` | Not Run | — |
-| TC-PROMO-05 | Promotion | ยอด < discount_min | API | Negative | High | login, TD-10 | ยอด < min | 1.Apply คูปอง | WM21 "ราคารวม...ไม่สามารถประยุกต์ใช้..." | `Controller.php:917-934` | Not Run | — |
+| TC-PROMO-05 | Promotion | ยอด < discount_min | API | Negative | High | login, TD-10 | ยอด < min | 1.Apply คูปอง | WM21 "ราคารวม...ไม่สามารถประยุกต์ใช้..." | `Controller.php:917-934` | Pass | — |
 | TC-PROMO-06 | Promotion | ยอดพอดี min/max | API | Boundary | Medium | login, TD-10 | ยอด=min, =max | 1.Apply | ค่าขอบพอดี **ใช้ไม่ได้** (`>min && <max`) | `Controller.php:918` | Not Run | strict boundary |
-| TC-PROMO-07 | Promotion | คูปองใช้ซ้ำ | Integration | Negative | High | login + เคยใช้ (TD-09) | coupon used | 1.Apply คูปองเดิม | "ท่านได้ใช้รหัสส่วนลด ... ไปแล้วค่ะ" | `validate_coupon:1426-1438` | Not Run | — |
+| TC-PROMO-07 | Promotion | คูปองใช้ซ้ำ | Integration | Negative | High | login + เคยใช้ (TD-09) | coupon used | 1.Apply คูปองเดิม | "ท่านได้ใช้รหัสส่วนลด ... ไปแล้วค่ะ" | `validate_coupon:1426-1438` | Pass | — |
 | TC-PROMO-09 | Promotion | amount vs percent | API | Positive | Medium | login | TD-11, TD-12 | 1.Apply แต่ละแบบ ดูยอดหัก | amount=บาทคงที่; percent=%×ยอด | `discountAmount:1707-1770` | Not Run | parameterize |
 | TC-PROMO-10 | Promotion | re-validate ตอนสั่ง | Integration | API Error | High | login, สลับยอด/คูปองให้ขัด | TD-07/13 | 1.Apply ผ่าน 2.กดชำระ | order reject "Error validating coupon code(WME01): ..." | `OrderController:store:~320` | Not Run | — |
 

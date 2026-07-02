@@ -63,6 +63,18 @@ Buy Now
     Click Element    ${PDP_BUY_NOW}
     Wait Until Url Contains Fragment    /checkout    ${TIMEOUTS}[NAVIGATION]
 
+Assert Product Not Orderable
+    [Documentation]    TC-PDP-05 / TC-DISC-07 — สินค้า allow_add_to_cart=false: หน้า PDP โหลด
+    ...    จริง (มี heading) แต่ปุ่มซื้อ (เพิ่มลงตะกร้า / ซื้อทันที) ต้องหายไป และมีลิงก์ LINE
+    ...    ให้ติดต่อแทน (ProductButton.tsx:131-150). Hard signal = ไม่มีปุ่มซื้อ.
+    Wait Until Element Is Visible    ${PDP_HEADING}    ${TIMEOUTS}[DEFAULT]
+    Page Should Not Contain Element    ${PDP_ADD_TO_CART}
+    ...    message=สินค้า allow_add_to_cart=false ต้องไม่มีปุ่ม "เพิ่มลงตะกร้า"
+    Page Should Not Contain Element    ${PDP_BUY_NOW}
+    ...    message=สินค้า allow_add_to_cart=false ต้องไม่มีปุ่ม "ซื้อทันที"
+    Page Should Contain Element    ${PDP_LINE_CONTACT}
+    ...    message=คาดว่าจะมีลิงก์ LINE (lin.ee/line.me) ให้ติดต่อแทนปุ่มซื้อ
+
 Assert Title Contains Code
     [Documentation]    ProductPage.assertTitleContainsCode(code) — D-01 guard.
     [Arguments]    ${code}

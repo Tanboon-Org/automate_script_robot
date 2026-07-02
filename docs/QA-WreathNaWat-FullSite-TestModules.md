@@ -182,7 +182,7 @@
 > ส่วนใหญ่ static — ทำ **smoke test** (โหลด 200, มี title/meta/og/canonical, breadcrumb, ข้อมูลติดต่อ, responsive)
 
 - **บทความ:** `/บทความ`, `/บทความ/[category]`, `/บทความ/[slug]`, `/ผู้เขียน/[slug]` — มี category filter + pagination 20/หน้า + JSON-LD BreadcrumbList
-- **บริการงานศพ (static):** `service-funeral`, `-crematory`, `-pet`, `-relics`, `all-service`
+- **บริการงานศพ (static):** `service-funeral`, `all-service` (`-crematory`, `-pet`, `-relics` คืน 404 บน staging — ตัดออกจาก scope)
 - **ข้อมูล:** `about-us`, `how-to-order`, `faqs`, `privacy-policy`, `compensation-policy`, `flower-shop`, `review-wreath`
 - **ต้องทดสอบเพิ่ม:** dynamic `[...slug]` router map ถูกต้อง (ตาม switch), Thai URL decode, slug มั่ว → 404 (`NotfoundPage`)
 

@@ -26,9 +26,9 @@
   {
     "key": "unverified",
     "_TD": "TD-31",
-    "_desc": "ผู้ใช้ที่ยังไม่ยืนยันอีเมล (email_verified_at=NULL) — ขอจาก dev",
-    "_status": "todo",
-    "email": "<<ask-dev: unverified user>>",
-    "password": "<<ask-dev>>"
+    "_desc": "ผู้ใช้ที่ยังไม่ยืนยันอีเมล (email_verified_at=NULL) — dev ให้มาแล้ว",
+    "_status": "ready",
+    "email": "testsuer@gmail.com",
+    "password": "123456789_Sno"
   }
 ]

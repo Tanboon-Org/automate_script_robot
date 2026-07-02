@@ -46,5 +46,17 @@
     "category": "พวงหรีดดอกไม้สด",
     "freeShipping": true,
     "notes": "curated pool · ราคาอ่านจากหน้า runtime"
+  },
+  {
+    "key": "notOrderable",
+    "code": "D040",
+    "slug": "d040-wnw-ดอนญ่ารำลึก",
+    "name": "WNW ดอนญ่ารำลึก",
+    "price": 0,
+    "originalPrice": null,
+    "size": "M",
+    "category": "พวงหรีดดอกไม้สด",
+    "freeShipping": false,
+    "notes": "TD-04 allow_add_to_cart=false (dev: d040) — ต้องซ่อนปุ่มซื้อ (เพิ่มลงตะกร้า/ซื้อทันที) + แสดงลิงก์ LINE. ใช้ TC-PDP-05 / TC-DISC-07. price=0 = อ่าน runtime"
   }
 ]

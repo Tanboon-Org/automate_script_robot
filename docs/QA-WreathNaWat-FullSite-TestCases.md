@@ -69,7 +69,7 @@
 | TC-LOGIN-01 | login สำเร็จ | UI | Positive | High | TD-30 | 1.เปิด AuthModal 2.กรอก email+password ถูก 3.กด เข้าสู่ระบบ | modal ปิด, modal สำเร็จ "เข้าสู่ระบบสำเร็จ", redirect `/user-infos`, header แสดงชื่อผู้ใช้ | `LoginForm.tsx:62-81` | Not Run |
 | TC-LOGIN-02 | ฟิลด์ว่าง | UI | Validation | Medium | — | 1.เว้น email/password 2.กดเข้าสู่ระบบ | error "กรุณาระบุอีเมลและรหัสผ่าน", ไม่ยิง API | `LoginSchema` | Not Run |
 | TC-LOGIN-03 | รหัส/อีเมลผิด | UI | Negative | High | TD-30 | กรอก password ผิด → submit | error "รหัสหรืออีเมลผู้ใช้ไม่ถูกต้อง", status=failed | `auth.ts:127-146` | Not Run |
-| TC-LOGIN-04 | อีเมลยังไม่ยืนยัน | UI | Negative | High | TD-31 | login ด้วย user ที่ยังไม่ยืนยัน | error "อีเมลผู้ใช้ ยังไม่ได้ยืนยันตัวตน / กรุณาตรวจสอบอีเมล" | `LoginForm.tsx` | Not Run |
+| TC-LOGIN-04 | อีเมลยังไม่ยืนยัน | UI | Negative | High | TD-31 | login ด้วย user ที่ยังไม่ยืนยัน | error "อีเมลผู้ใช้ ยังไม่ได้ยืนยันตัวตน / กรุณาตรวจสอบอีเมล" | `LoginForm.tsx` | Pass |
 | TC-LOGIN-05 | Remember Me = ON | UI | Functional | Medium | TD-30 | ติ๊ก rememberMe → login → ปิด browser → เปิดใหม่ | token อยู่ใน **localStorage**, ยัง login ค้าง | `auth.ts:132 setAccessToken(token,true)` | Not Run |
 | TC-LOGIN-06 | Remember Me = OFF | UI | Functional | Medium | TD-30 | ไม่ติ๊ก → login → refresh tab | token อยู่ใน **sessionStorage** เท่านั้น | `auth.ts:132` | Not Run |
 | TC-LOGIN-07 | guest cart sync หลัง login | Integration | Positive | Medium | TD-30 + มีของในตะกร้า (guest) | เพิ่มสินค้าแบบ guest → login | cart merge จาก `user.cart` ไม่หาย (`synUserCart`) | `LoginForm.tsx:64-66` | Not Run |
@@ -180,7 +180,7 @@
 | TC-DISC-04 | pagination + คง URL | UI | Functional | Medium | listing >15 ชิ้น | เปลี่ยนหน้า → refresh | 15/หน้า, state คงใน URL | เดียวกัน | Not Run |
 | TC-DISC-05 | wizard แนะนำเฉพาะคุณ | UI | Functional | Medium | TD-37 | เปิด `products-special` ที่มี cookie | สินค้าตรง key_1..4, load more 20 | `products-special/page.tsx` | Not Run |
 | TC-DISC-06 | EXCLUDED_TAGS ไม่โผล่ | API | Negative | Medium | หมวดมี excluded tag | ดู listing | สินค้า excluded ไม่แสดง | `process_excluded_tags` | Not Run |
-| TC-DISC-07 | allow_add_to_cart=false | UI | Negative | Medium | TD-04 | เปิด PDP สินค้าสั่งไม่ได้ | ซ่อน Buy Now + แสดงลิงก์ LINE | `ProductButton.tsx:131-150` | Not Run |
+| TC-DISC-07 | allow_add_to_cart=false | UI | Negative | Medium | TD-04 | เปิด PDP สินค้าสั่งไม่ได้ | ซ่อน Buy Now + แสดงลิงก์ LINE | `ProductButton.tsx:131-150` | Pass |
 | TC-DISC-08 | ราคา promotion vs regular | UI | Functional | Medium | สินค้ามีโปร | เปิด PDP/listing | แสดงราคาโปร + ราคาตัดทอน | `_products` promotion | Not Run |
 | TC-DISC-09 | express/promotion/donate | UI | Smoke | Low | — | เปิด `product-express`, `wreath-promotion`, `wreath-donate` | render, ปุ่ม LINE/pagination ทำงาน | routes | Not Run |
 | TC-DISC-10 | near-temple/near-me | UI | Smoke | Low | — | เปิด `servicelocation/[slug]`, `wreath-nearme` | location selector ตามจังหวัด | routes | Not Run |
@@ -191,10 +191,10 @@
 
 | TC ID | Feature | Level | Type | Priority | Preconditions | Test Steps | Expected Result | Code Evidence | Status |
 |---|---|---|---|---|---|---|---|---|---|
-| TC-CMS-01 | บทความ listing + filter | UI | Functional | Medium | TD-38 | เปิด `/บทความ`, เลือก category | filter ทำงาน, pagination 20/หน้า | `article/page.tsx` | Not Run |
-| TC-CMS-02 | บทความ detail | UI | Smoke | Low | TD-38 | เปิด `/บทความ/[slug]` | render เนื้อหา + JSON-LD BreadcrumbList | `article/[slug]` | Not Run |
+| TC-CMS-01 | บทความ listing + filter | UI | Functional | Medium | TD-38 | เปิด `/บทความ`, เลือก category | filter ทำงาน, pagination 20/หน้า | `article/page.tsx` | Pass |
+| TC-CMS-02 | บทความ detail | UI | Smoke | Low | TD-38 | เปิด `/บทความ/[slug]` | render เนื้อหา + JSON-LD BreadcrumbList | `article/[slug]` | Pass |
 | TC-CMS-03 | ผู้เขียน | UI | Smoke | Low | TD-38 | เปิด `/ผู้เขียน/[slug]` | บทความตาม author | `author-article/[slug]` | Not Run |
-| TC-CMS-04 | service pages static | UI | Smoke | Low | — | เปิด service-funeral/-crematory/-pet/-relics, all-service | 200, มี title/meta/og/canonical, breadcrumb, ข้อมูลติดต่อ | routes | Not Run |
+| TC-CMS-04 | service pages static | UI | Smoke | Low | — | เปิด service-funeral, all-service (crematory/pet/relics ตัดออก — 404 บน staging) | 200, มี title/meta/og/canonical, breadcrumb, ข้อมูลติดต่อ | routes | Not Run |
 | TC-CMS-05 | info pages | UI | Smoke | Low | — | เปิด about-us/how-to-order/faqs/privacy/compensation/flower-shop/review-wreath | render + responsive | routes | Not Run |
 | TC-CMS-06 | dynamic [...slug] router | UI | Functional | Medium | — | เปิด slug ตาม switch ต่างๆ | route ไปหน้าถูก, Thai URL decode | `[...slug]/page.tsx` | Not Run |
 | TC-CMS-07 | slug มั่ว → 404 | UI | Negative | Medium | — | เปิด slug ไม่มีจริง | `NotfoundPage` (404) | เดียวกัน | Not Run |

@@ -65,6 +65,16 @@ Setup Auth Test
     Dismiss Cookie
 
 # ── Coupon / promotion (TC-PROMO-*) ───────────────────────────────────────────
+Skip If Coupon Not Ready
+    [Documentation]    Gate a positive coupon case until dev supplies usable data. The valid
+    ...    coupon (coupons.json key=valid) is BLOCKED while DISCOUNT10 stays consumed by
+    ...    loginUser — flip _status to "ready" and fill expectedDiscount once dev returns a
+    ...    fresh code (QA-Coupon-TestData-Request.md §1.1). Skips with a clear reason otherwise.
+    [Arguments]    ${coupon}
+    IF    "${coupon.get('_status', 'todo')}" != "ready"
+        Skip    BLOCKED: ขอ valid coupon (code ที่ loginUser ยังไม่เคยใช้ + expectedDiscount) จาก dev — QA-Coupon-TestData-Request.md §1.1
+    END
+
 Prepare Checkout For Coupon
     [Documentation]    Fill the minimum a coupon needs before it can be applied — temple +
     ...    a soonest date/time. The apply button is gated behind a delivery date
@@ -87,21 +97,23 @@ Setup Coupon Checkout As Guest
     Prepare Checkout For Coupon
 
 Setup Coupon Checkout As Login User
-    [Documentation]    beforeEach for login-required coupon cases (02-R/03-R/07). Coupons need
-    ...    login, and the logged-in cart is server-side, so add H014 as a GUEST first, THEN log
-    ...    in — login merges the guest cart (synUserCart, see TC-LOGIN-07). Then reach /checkout/
-    ...    and ready the coupon field.
+    [Documentation]    beforeEach for login-required coupon cases (02-R/03-R/05/07). Coupons need
+    ...    login. NOTE: the guest→login cart merge (synUserCart) is currently BROKEN on staging —
+    ...    the guest cart is dropped after login and the server cart comes back empty (verified
+    ...    live 2026-07-02, see QA-Dev-Request-Blockers §3). So we log in FIRST and THEN add H014
+    ...    directly to the logged-in (server-side) cart, avoiding the merge path entirely. The
+    ...    merge itself is the subject of TC-LOGIN-07.
     Open WNW Browser
     Dismiss Cookie
-    ${product}=    Load Test Data    product    h014
-    Open Product By Data    ${product}
-    Add To Cart
     ${user}=    Load Test Data    user    login
     Login With    ${user}[email]    ${user}[password]
     Assert Login Succeeded
+    ${product}=    Load Test Data    product    h014
+    Open Product By Data    ${product}
+    Add To Cart
     Go To Cart
-    # Post-login cart is server-side and renders after the synUserCart round-trip; wait for the
-    # "ซื้อทันที" button before clicking (the shared Proceed keyword clicks without waiting).
+    # Server-side cart renders after an API round-trip; wait for the "ซื้อทันที" button before
+    # clicking (the shared Proceed keyword clicks without waiting).
     Wait Until Any Element Visible    ${CART_CHECKOUT_BUTTON}    ${TIMEOUTS}[NAVIGATION]
     Proceed To Checkout From Cart
     Prepare Checkout For Coupon
