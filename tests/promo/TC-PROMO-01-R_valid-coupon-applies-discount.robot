@@ -4,7 +4,7 @@ Documentation     TC-PROMO-01-R — login แล้วใส่คูปอง v
 ...               ไม่ถูก consume จึงรันซ้ำได้ (logic = 1 คูปอง / 1 ครั้ง ต่อ user). ถ้าต้องการ
 ...               end-to-end ที่กดสั่งจริง คูปองจะถูกเผาหลังรอบแรกและต้องให้ dev reset UserCoupon.
 ...               Evidence: validate_coupon, Controller.php:917-934.
-...               BLOCKED: ขอ valid code ที่ loginUser (inoobeam) ยังไม่เคยใช้ + ช่วง min/max +
+...               BLOCKED: ขอ valid code ที่ loginUser (chamow05w) ยังไม่เคยใช้ + ช่วง min/max +
 ...               ชนิด/ค่าส่วนลด จาก dev (DISCOUNT10 ถูกใช้ไปแล้ว) — QA-Coupon-TestData-Request.md §1.1.
 ...               เมื่อได้ค่า: ตั้ง coupons.json key=valid → _status=ready + เติม expectedDiscount.
 Resource          ../../resources/keywords/suite_helpers.resource

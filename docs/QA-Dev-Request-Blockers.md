@@ -13,11 +13,11 @@
 
 | # | สิ่งที่ขอ | ใช้กับ | รายละเอียด |
 |---|---|---|---|
-| 1.1 | **`web_user_token`** ของ `inoobeam@hotmail.com` | ทุกเคส coupon ระดับ API | คูปองต้อง login — มี user/password แล้ว ขาด token |
-| 1.2 | **คูปอง valid** ที่ `inoobeam` **ยังไม่เคยใช้** | TC-PROMO-01-R / 09 | ตอนนี้ `DISCOUNT10` ถูก user นี้ใช้ไปแล้ว (เป็นเคส "used") → ขอโค้ดใหม่ที่ยังไม่ถูกใช้ + บอกช่วงยอด min/max + ชนิดส่วนลด (บาท/%) |
+| 1.1 | **`web_user_token`** ของ `champw05w@gmail.com` | ทุกเคส coupon ระดับ API | คูปองต้อง login — มี user/password แล้ว ขาด token |
+| 1.2 | **คูปอง valid** ที่ `champw05w` **ยังไม่เคยใช้** | TC-PROMO-01-R / 09 | ตอนนี้ `DISCOUNT10` ถูก user นี้ใช้ไปแล้ว (เป็นเคส "used") → ขอโค้ดใหม่ที่ยังไม่ถูกใช้ + บอกช่วงยอด min/max + ชนิดส่วนลด (บาท/%) |
 | 1.3 | **คูปองหมดอายุจริง** (`codeExpired`) | TC-PROMO-02-R (expired) | `WD12` ที่ให้มา **ไม่ reject** บน staging (กดแล้วเงียบ ส่วนลด ฿0 ไม่มี error) → ขอโค้ดที่หมดอายุจริง |
 | 1.4 | **คูปอง min/max** ที่ตั้งค่า ≤ ยอดที่จัดได้ | TC-PROMO-05 / 06 | สินค้าถูกสุด ~฿1,599 แต่ `MINMAXTEST` min=1,000 → จัดยอด < min ไม่ได้ ขอ min ที่ทดสอบ boundary ได้ (เช่น min 2,000 / max 3,000) |
-| 1.5 | **user ที่มีออเดอร์** (pending + completed) — `TD-39` | TC-OH-01 / 03 / 04 | `inoobeam` ไม่มีออเดอร์เลย → empty state เท่านั้นที่ทดสอบได้ ขอ user (หรือ set ออเดอร์ให้) เพื่อทดสอบ "ประวัติออเดอร์ + copy เลขออเดอร์" |
+| 1.5 | **user ที่มีออเดอร์** (pending + completed) — `TD-39` | TC-OH-01 / 03 / 04 | `champw05w` ไม่มีออเดอร์เลย → empty state เท่านั้นที่ทดสอบได้ ขอ user (หรือ set ออเดอร์ให้) เพื่อทดสอบ "ประวัติออเดอร์ + copy เลขออเดอร์" |
 | 1.6 | **article slug + author slug จริง** — `TD-38` | TC-CMS-01 / 02 / 03 | ทดสอบหน้า `/บทความ/[slug]`, `/ผู้เขียน/[slug]` + JSON-LD |
 | 1.7 | **ไฟล์โลโก้ทดสอบ** — `TD-35` | TC-CARD-06 / 07 / 08 | รูป >288px (ใหญ่เกิน), รูปปกติ, ไฟล์ non-image (.pdf) สำหรับทดสอบ upload โลโก้ป้าย |
 | 1.8 | **slug สินค้าที่ `allow_add_to_cart=false`** — `TD-04` | TC-DISC-07 / TC-PDP-05 | slug `b301-wnw-วลิลา-01-16` ที่ให้มา **ยังมีปุ่มซื้อ** (สั่งได้) → ขอ slug ที่ปิดการขายจริง (ต้องซ่อน Buy Now + แสดงปุ่ม LINE) |
@@ -60,14 +60,14 @@ User-Agent จาก request header
 | 3.6 | **(typo?)** ปุ่มตอนส่ง forget-password ขึ้นข้อความ **"กำลังดดำเนินการ"** (มี ด ซ้ำ) | "กำลังดำเนินการ" | เดียวกัน |
 | 3.7 | **NotFound markup ติดมาใน HTML ทุกหน้า** (ซ่อนอยู่) — ทำให้เช็ค 404 จาก page source ไม่ได้ ต้องใช้ visible text | (ไม่ใช่ bug ร้ายแรง แต่กระทบ SEO/test) ยืนยันว่าตั้งใจ | dynamic router |
 | 3.8 | **🔴 `POST /api/order` crash 500** — ส่ง cart ที่ slug ไม่มีจริง/ไม่มี field `count` → ได้ `500 {"message":"Undefined array key \"count\"","file":"OrderController.php","line":176}` แทนที่จะ reject สวย ๆ ด้วย "ไม่พบสินค้าตาม slug..." | ควรเป็น 422 + ข้อความ slug rule (ProductSlugExists) ไม่ใช่ PHP 500 | `OrderController.php:176`, `Rules/ProductSlugExists.php` (TC-CHK-12) |
-| 3.9 | **🔴 guest→login cart merge พัง** — เพิ่มสินค้าตอนเป็น guest แล้ว login (inoobeam) → ตะกร้า**ว่าง** ("ไม่มีสินค้า") สินค้าที่เพิ่งเพิ่มหายหมด (verify ด้วย Selenium 2026-07-02: login สำเร็จแต่ cart empty). กระทบ TC-PROMO-02-R/03-R/05/07 + **TC-LOGIN-07** (เคสที่เทสต์ merge โดยตรง). Workaround ใน automate: setup coupon เปลี่ยนเป็น login-ก่อน-แล้วค่อย-add (เลี่ยง merge) | guest cart ต้อง merge เข้า user cart ตอน login | `synUserCart` (TC-LOGIN-07) |
+| 3.9 | **🔴 guest→login cart merge พัง** — เพิ่มสินค้าตอนเป็น guest แล้ว login (champw05w) → ตะกร้า**ว่าง** ("ไม่มีสินค้า") สินค้าที่เพิ่งเพิ่มหายหมด (verify ด้วย Selenium 2026-07-02: login สำเร็จแต่ cart empty). กระทบ TC-PROMO-02-R/03-R/05/07 + **TC-LOGIN-07** (เคสที่เทสต์ merge โดยตรง). Workaround ใน automate: setup coupon เปลี่ยนเป็น login-ก่อน-แล้วค่อย-add (เลี่ยง merge) | guest cart ต้อง merge เข้า user cart ตอน login | `synUserCart` (TC-LOGIN-07) |
 
 ---
 
 ## 4. Checklist สำหรับ Dev (คัดลอกตอบกลับได้)
 
 ```
-[ ] web_user_token (inoobeam@hotmail.com) = 1295|KoaWKNaRsZgj1jJfIhQzym29rNRE7pLoKTLlcrzd95aa314a
+[ ] web_user_token (champw05w@gmail.com) = 1295|KoaWKNaRsZgj1jJfIhQzym29rNRE7pLoKTLlcrzd95aa314a
 [ ] coupon valid (ยังไม่ถูกใช้)           = TESTDISCOUNNT01  (min–max 1000–ไม่มีกำหนด, ส่วนลด 10%)
 [ ] coupon expired (reject จริง)          = TESTEXPIRE01
 [ ] coupon min/max (min ≤ ยอดที่จัดได้)   = MINMAXTEST  (min 2000 / max 6000)

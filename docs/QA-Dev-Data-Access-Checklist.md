@@ -12,7 +12,7 @@
 |---|---|---|---|---|
 | A1 | **Email tokens** — confirm-email (valid/expired/used) + reset-password (valid/expired/used) หรือให้ **access inbox / วิธี generate** | **7** | TC-CFM-01/03/04/05, TC-RST-01/03/05 | ตอนนี้เข้า inbox ไม่ได้ → เปิดลิงก์ยืนยัน/รีเซ็ตไม่ได้ |
 | A2 | **Mock/trigger backend errors** — ERP 500/timeout, media-upload fail, 401 (endpoint/feature-flag/toggle) | **5** | TC-API-02, TC-XAPI-02, TC-CARD-07, TC-FGT-02, TC-XSESS-01 | ต้องบังคับ error path บน staging ให้ได้ |
-| A3 | **Test user ที่มีออเดอร์** (pending + completed) — `TD-39` | **3** | TC-OH-01/03/04 | inoobeam ไม่มีออเดอร์ → ทดสอบได้แค่ empty state |
+| A3 | **Test user ที่มีออเดอร์** (pending + completed) — `TD-39` | **3** | TC-OH-01/03/04 | chamow05w ไม่มีออเดอร์ → ทดสอบได้แค่ empty state |
 | A4 | **Order + tracking data หลายสถานะ** — order_code + tracking_id (status 0/1/2/3/4) + phone/email ที่ค้นได้ — `TD-20/21/22` | **5** | TC-TRK-01a-R/04, TC-TRK2-01/02/03 | ต้องมี order จริงบน staging ให้ค้น |
 | A5 | **Coupon เพิ่ม** — (a) amount-type code, (b) campaign code + applicable slug, (c) สินค้าราคาแตะ min/max พอดี **หรือ** ปรับ min/max ของ MINMAXTEST | **3** | TC-PROMO-06/09/10 | ปัจจุบันมีแต่คูปอง %; สินค้าถูกสุด 1,599 แตะ 2000/6000 ไม่ได้ |
 | A6 | **ยืนยัน/แก้ บั๊ก** sort, keyword-search, cart-merge (§3.1/3.2/3.9) | **5** | TC-CAT-02-R, TC-DISC-01/03, TC-SRCH-01-R, TC-CART-07 | ถ้ายัง bug อยู่ → เขียนได้แต่จะ fail (เป็น bug-doc) |
@@ -50,7 +50,7 @@
 ```
 [ ] A1 email tokens: confirm(valid/expired/used)= __ / reset(valid/expired/used)= __  (หรือ inbox access)
 [ ] A2 วิธี trigger error: ERP 500/timeout= __ , media fail= __ , 401= __
-[ ] A3 user มีออเดอร์ (pending+completed)= email __  (หรือ set ให้ inoobeam)
+[ ] A3 user มีออเดอร์ (pending+completed)= email __  (หรือ set ให้ chamow05w)
 [ ] A4 order_code= __ , tracking_id= __ , statuses= 0/1/2/3/4 , lookup phone/email= __
 [ ] A5 coupon amount code= __ , campaign code= __ + slug= __ , (min/max ปรับเป็น หรือ สินค้าราคา __ )
 [ ] A6 bug §3.1 sort / §3.2 keyword / §3.9 cart-merge : fix? yes/no/known-issue

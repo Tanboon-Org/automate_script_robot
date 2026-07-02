@@ -1,6 +1,6 @@
 *** Settings ***
 Documentation     TC-PROMO-07 — login แล้วใส่คูปองที่ user คนนี้เคยใช้แล้ว → ใช้ซ้ำไม่ได้.
-...               Negative. Precondition: loginUser (inoobeam) มี record ใน UserCoupon ของ
+...               Negative. Precondition: loginUser (chamow05w) มี record ใน UserCoupon ของ
 ...               code นี้แล้ว (TD-09). Evidence: validate_coupon:1426-1438 →
 ...               "ท่านได้ใช้รหัสส่วนลด ... ไปแล้วค่ะ".
 Resource          ../../resources/keywords/suite_helpers.resource

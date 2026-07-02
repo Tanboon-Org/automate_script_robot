@@ -4,7 +4,7 @@
     "_TD": "TD-30",
     "_desc": "ผู้ใช้ที่ login ได้จริง + ยืนยันอีเมลแล้ว (ใช้ login/user-infos)",
     "_status": "ready",
-    "email": "inoobeam@hotmail.com",
+    "email": "champw05w@gmail.com",
     "password": "123456789"
   },
   {
@@ -12,7 +12,7 @@
     "_TD": "TD-02c",
     "_desc": "email ที่มีในระบบแล้ว — ใช้ทดสอบสมัครซ้ำต้องถูก reject",
     "_status": "ready",
-    "email": "chalinee.ma@uam.co.th"
+    "email": "champw05wa@ugmail.com"
   },
   {
     "key": "new_register",
