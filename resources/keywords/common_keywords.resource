@@ -111,6 +111,16 @@ Assert Image Count At Least
     ${count}=    Execute JavaScript    return document.querySelectorAll('img').length;
     Should Be True    ${count} >= ${min}    คาดว่ามีรูปอย่างน้อย ${min} แต่พบ ${count}
 
+Assert JsonLd Present
+    [Documentation]    TC-XPERF-02 — หน้ามี structured data อย่างน้อย 1 ก้อน (application/ld+json).
+    ${count}=    Execute JavaScript    return document.querySelectorAll('script[type="application/ld+json"]').length;
+    Should Be True    ${count} >= 1    ไม่พบ JSON-LD (application/ld+json) บนหน้า
+
+Assert Open Graph Present
+    [Documentation]    TC-XPERF-02 — หน้ามี Open Graph meta (og:*) อย่างน้อย 1 ตัว.
+    ${count}=    Execute JavaScript    return document.querySelectorAll('meta[property^="og:"]').length;
+    Should Be True    ${count} >= 1    ไม่พบ Open Graph meta (og:*) บนหน้า
+
 Assert Sitemap Xml
     [Documentation]    TC-CMS-08 — navigate to a sitemap path and assert it is a valid sitemap
     ...    document (<sitemapindex> or <urlset>) carrying at least one <loc>.
