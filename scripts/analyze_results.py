@@ -151,13 +151,16 @@ def main() -> int:
         analysis = analyze(prompt)
         write_out(analysis or "_AI ไม่ได้ส่งข้อความกลับ (อาจโดน safety filter)_")
     except Exception as e:  # noqa: BLE001
+        # log สาเหตุจริงลง Actions log เสมอ (การ์ด Teams เก็บข้อความสั้น)
+        print(f"[ai-analyze] ERROR {type(e).__name__}: {e}", file=sys.stderr)
         if is_quota_error(e):
             write_out(
-                "⚠️ **API key หมดโควตาฟรีของรอบนี้แล้ว** — ข้ามการวิเคราะห์ด้วย AI รอบนี้ "
-                "(โควตา Gemini free tier จะรีเซ็ตตามรอบ แล้วรอบถัดไปจะวิเคราะห์ให้ตามปกติ)"
+                "⚠️ **Gemini free tier รอบนี้ติดโควตา/เรตลิมิต** — ข้ามการวิเคราะห์ด้วย AI รอบนี้ "
+                "(เต็มต่อนาทีจะคลายใน ~1 นาที, เต็มรายวันรีเซ็ตเที่ยงคืน Pacific — "
+                "ดูสาเหตุจริงใน Actions log ที่ step ‘AI analyze results’)"
             )
         else:
-            write_out(f"_เรียก AI วิเคราะห์ไม่สำเร็จ ({type(e).__name__}: {e}) — ข้ามไปก่อน_")
+            write_out(f"_เรียก AI วิเคราะห์ไม่สำเร็จ ({type(e).__name__}: {e}) — ข้ามไปก่อน (ดู Actions log)_")
     return 0
 
 
