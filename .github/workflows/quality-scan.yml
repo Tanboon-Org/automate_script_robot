@@ -1,0 +1,113 @@
+name: Quality Scan (a11y + links)
+
+# สแกนคุณภาพเว็บอัตโนมัติ "โดยไม่ต้องเขียนเทสเคส":
+#  - a11y_scan.py  : axe-core ตรวจ accessibility/WCAG ทุกหน้า seed
+#  - link_check.py : crawler หาลิงก์เสีย / รูปโหลดไม่ขึ้น / JS console error
+# สแกน STAGING เท่านั้น (BASE_URL จาก env_staging.yaml) — read-only ไม่สร้าง order
+# รันกลางคืน + กดเองได้ (ไม่ผูกกับ push เพื่อไม่ถ่วง E2E ปกติ)
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 20 * * *'   # 20:00 UTC = 03:00 ตามเวลาไทย ทุกวัน
+
+concurrency:
+  group: quality-scan-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scan:
+    name: Accessibility + link/health scan (staging)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install scan dependencies
+        run: pip install "selenium>=4.27" requests PyYAML
+
+      - name: Show Chrome version
+        run: google-chrome --version || google-chrome-stable --version
+
+      # fail-open ทั้งคู่ (สคริปต์ exit 0 เสมอ) — สแกนพังไม่ทำ job ล่ม
+      - name: Accessibility scan (axe-core)
+        run: python3 scripts/a11y_scan.py
+
+      - name: Link & health crawl
+        run: python3 scripts/link_check.py
+
+      - name: Upload scan reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-scan-reports
+          path: results/
+          retention-days: 14
+          if-no-files-found: warn
+
+      - name: Notify MS Teams
+        if: ${{ !cancelled() }}
+        env:
+          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [ -z "$TEAMS_WEBHOOK_URL" ]; then
+            echo "TEAMS_WEBHOOK_URL secret ไม่ได้ตั้งไว้ — ข้ามการแจ้งเตือน Teams"
+            exit 0
+          fi
+
+          a11y=$(cat results/a11y_summary.md 2>/dev/null || echo "_ไม่มีผล a11y_")
+          links=$(cat results/linkcheck_summary.md 2>/dev/null || echo "_ไม่มีผล link check_")
+
+          # clean = ทั้งสองสรุปมี "✅ ไม่พบปัญหา"
+          if echo "$a11y" | grep -q "✅ ไม่พบปัญหา" && echo "$links" | grep -q "✅ ไม่พบปัญหา"; then
+            status="✅ ไม่พบปัญหา"; color="Good"
+          else
+            status="⚠️ พบจุดที่ควรตรวจ"; color="Warning"
+          fi
+
+          payload=$(jq -n \
+            --arg status "$status" --arg color "$color" \
+            --arg repo "$REPO" --arg url "$RUN_URL" \
+            --arg a11y "$a11y" --arg links "$links" \
+            '{
+              type: "message",
+              attachments: [{
+                contentType: "application/vnd.microsoft.card.adaptive",
+                content: {
+                  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                  type: "AdaptiveCard",
+                  version: "1.4",
+                  body: [
+                    { type: "TextBlock", size: "Large", weight: "Bolder", color: $color,
+                      text: ("Quality Scan (staging) — " + $status), wrap: true },
+                    { type: "TextBlock", isSubtle: true, spacing: "None", wrap: true,
+                      text: ($repo + " • accessibility + link/health") },
+                    { type: "TextBlock", text: $a11y, wrap: true, separator: true },
+                    { type: "TextBlock", text: $links, wrap: true, separator: true }
+                  ],
+                  actions: [
+                    { type: "Action.OpenUrl", title: "ดูรายงานเต็มบน GitHub", url: $url }
+                  ]
+                }
+              }]
+            }')
+
+          http_code=$(curl -sS -o /tmp/teams_resp.txt -w "%{http_code}" \
+            -H "Content-Type: application/json" -d "$payload" "$TEAMS_WEBHOOK_URL")
+          echo "Teams webhook HTTP status: $http_code"
+          cat /tmp/teams_resp.txt; echo
+          if [ "$http_code" -ge 400 ]; then
+            echo "::error::Teams webhook ตอบกลับ HTTP $http_code"
+            exit 1
+          fi
