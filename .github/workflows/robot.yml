@@ -74,9 +74,8 @@ jobs:
           # GEMINI_API_KEY ฟรีจาก https://aistudio.google.com/apikey (ไม่ต้องผูกบัตร)
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           AI_MODEL: gemini-2.0-flash
-        run: |
-          pip install "google-genai>=1.0"
-          python3 scripts/analyze_results.py
+        # google-genai ติดตั้งจาก requirements.txt แล้ว (pin เวอร์ชัน + เข้า pip cache)
+        run: python3 scripts/analyze_results.py
 
       # รายงาน HTML + log + output.xml + screenshots + ai_analysis.md อยู่ใต้ results/
       - name: Upload Robot Framework report

@@ -16,12 +16,14 @@
 fail-open เสมอ: ไม่ทำ pipeline ล่ม
 """
 
+import ipaddress
 import json
 import os
 import re
+import socket
 import sys
 from collections import deque
-from urllib.parse import urlparse
+from urllib.parse import urljoin, urlparse
 
 import requests
 
@@ -50,14 +52,49 @@ def _write_summary(text):
     print(text)
 
 
-def check_status(session, url):
-    """คืน (status_code:int|None, note:str). ลอง HEAD ก่อน ถ้าไม่รองรับค่อย GET"""
+def _host_is_public(host):
+    """host ต้อง resolve เป็น public IP เท่านั้น — กัน SSRF ไปหา metadata service /
+    localhost / เครือข่ายภายใน runner. ถ้า resolve ไม่ได้ ปล่อยผ่านให้ requests
+    รายงาน ERR ตามปกติ (จะได้เห็นใน report ว่าลิงก์เสียเพราะ DNS)"""
     try:
-        r = session.head(sc.requote(url), allow_redirects=True, timeout=HTTP_TIMEOUT)
-        if r.status_code >= 400 or r.status_code == 405:
-            r = session.get(sc.requote(url), allow_redirects=True, timeout=HTTP_TIMEOUT, stream=True)
-            r.close()
-        return r.status_code, ""
+        infos = socket.getaddrinfo(host, None, proto=socket.IPPROTO_TCP)
+    except (socket.gaierror, UnicodeError):
+        return True
+    for info in infos:
+        try:
+            ip = ipaddress.ip_address(info[4][0])
+        except ValueError:
+            return False
+        if not ip.is_global:
+            return False
+    return True
+
+
+def url_is_safe(url):
+    """ยิง HTTP เช็คได้เฉพาะ http/https ที่ host เป็น public เท่านั้น
+    (ลิงก์ scheme อื่น / host ภายใน จะถูกรายงานเป็น blocked แทนการยิงจริง)"""
+    p = urlparse(url)
+    return p.scheme in ("http", "https") and bool(p.hostname) and _host_is_public(p.hostname)
+
+
+def check_status(session, url):
+    """คืน (status_code:int|None, note:str). ลอง HEAD ก่อน ถ้าไม่รองรับค่อย GET
+    ตาม redirect เองทีละ hop และ validate ทุก hop — เว็บปลายทางอาจ redirect
+    ไปหา IP ภายในได้ (SSRF ผ่าน redirect)"""
+    current = url
+    try:
+        for _ in range(10):
+            if not url_is_safe(current):
+                return None, "blocked-unsafe-url"
+            r = session.head(sc.requote(current), allow_redirects=False, timeout=HTTP_TIMEOUT)
+            if r.status_code >= 400:
+                r = session.get(sc.requote(current), allow_redirects=False, timeout=HTTP_TIMEOUT, stream=True)
+                r.close()
+            if r.is_redirect or r.is_permanent_redirect:
+                current = urljoin(current, r.headers["location"])
+                continue
+            return r.status_code, ""
+        return None, "TooManyRedirects"
     except requests.RequestException as e:
         return None, type(e).__name__
 

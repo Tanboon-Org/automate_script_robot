@@ -32,8 +32,9 @@ jobs:
           cache: pip
           cache-dependency-path: requirements.txt
 
+      # ใช้ requirements.txt ชุดเดียวกับ robot.yml — เวอร์ชันตรงกัน + cache key (บรรทัดบน) ตรงกับของจริง
       - name: Install scan dependencies
-        run: pip install "selenium>=4.27" requests PyYAML
+        run: pip install -r requirements.txt
 
       - name: Show Chrome version
         run: google-chrome --version || google-chrome-stable --version
