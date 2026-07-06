@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub Actions — ค่าใช้จ่ายและ Limit ของ repo นี้</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #1f2328;
+    --muted: #59636e;
+    --border: #d1d9e0;
+    --accent: #0969da;
+    --ok-bg: #dafbe1;
+    --ok-fg: #116329;
+    --warn-bg: #fff8c5;
+    --warn-fg: #7d4e00;
+    --danger-bg: #ffebe9;
+    --danger-fg: #a40e26;
+    --code-bg: #f6f8fa;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1117;
+      --fg: #e6edf3;
+      --muted: #9198a1;
+      --border: #3d444d;
+      --accent: #4493f8;
+      --ok-bg: #12261e;
+      --ok-fg: #3fb950;
+      --warn-bg: #272115;
+      --warn-fg: #d29922;
+      --danger-bg: #25171c;
+      --danger-fg: #f85149;
+      --code-bg: #161b22;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 2rem 1rem 4rem;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans Thai", "Sarabun", sans-serif;
+    line-height: 1.7;
+  }
+  main { max-width: 860px; margin: 0 auto; }
+  h1 { font-size: 1.6rem; line-height: 1.4; border-bottom: 1px solid var(--border); padding-bottom: .6rem; }
+  h2 { font-size: 1.25rem; margin-top: 2.2rem; }
+  .meta { color: var(--muted); font-size: .875rem; margin-top: -0.5rem; }
+  .banner {
+    background: var(--ok-bg);
+    color: var(--ok-fg);
+    border: 1px solid currentColor;
+    border-radius: 8px;
+    padding: .9rem 1.1rem;
+    font-weight: 600;
+    margin: 1.5rem 0;
+  }
+  .warn-box {
+    background: var(--danger-bg);
+    color: var(--danger-fg);
+    border: 1px solid currentColor;
+    border-radius: 8px;
+    padding: .9rem 1.1rem;
+    margin: 1rem 0;
+  }
+  .warn-box strong { display: block; margin-bottom: .3rem; }
+  .table-wrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; font-size: .95rem; }
+  th, td { border: 1px solid var(--border); padding: .55rem .8rem; text-align: left; vertical-align: top; }
+  th { background: var(--code-bg); }
+  code {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: .1em .35em;
+    font-size: .875em;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  a { color: var(--accent); }
+  .tag { display: inline-block; border-radius: 999px; padding: 0 .6em; font-size: .8rem; font-weight: 600; }
+  .tag.ok { background: var(--ok-bg); color: var(--ok-fg); }
+  .tag.warn { background: var(--warn-bg); color: var(--warn-fg); }
+  ul { padding-left: 1.4rem; }
+  li { margin: .3rem 0; }
+</style>
+</head>
+<body>
+<main>
+  <h1>GitHub Actions — ค่าใช้จ่ายและ Limit ของ <code>Tanboon-Org/automate_script_robot</code></h1>
+  <p class="meta">จัดทำ: 2026-07-06 · ตรวจสถานะ repo จาก GitHub API ณ วันจัดทำ</p>
+
+  <div class="banner">
+    ✅ สรุปสั้น: repo นี้เป็น <u>public</u> — รันบน GitHub-hosted standard runner ได้ฟรี
+    ไม่จำกัดนาที ไม่นับ storage ของ artifact และ<strong>ไม่มีทางถูกหักเงิน</strong>
+  </div>
+
+  <h2>ทำไมถึงฟรี</h2>
+  <p>
+    GitHub ให้ repo แบบ public ใช้ standard runner (<code>ubuntu-latest</code>,
+    <code>windows-latest</code>, <code>macos-latest</code>) โดยไม่คิดค่านาทีและไม่คิดพื้นที่เก็บ artifact
+    ทั้งสอง workflow ของ project นี้ (<code>robot.yml</code>, <code>quality-scan.yml</code>)
+    ใช้ <code>ubuntu-latest</code> ธรรมดา จึงเข้าเกณฑ์ฟรีทั้งคู่
+  </p>
+
+  <h2>Limit ที่ยังมีอยู่ (แม้จะฟรี)</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>เรื่อง</th><th>Limit</th><th>สถานะของ project นี้</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>เวลารันต่อ job</td>
+          <td>สูงสุด 6 ชั่วโมง/job</td>
+          <td><span class="tag ok">ปลอดภัย</span> ตั้ง <code>timeout-minutes</code> ไว้ 45 (robot) / 30 (quality-scan) นาที</td>
+        </tr>
+        <tr>
+          <td>Job รันพร้อมกัน</td>
+          <td>20 jobs (Free plan)</td>
+          <td><span class="tag ok">ปลอดภัย</span> มีแค่ 2 workflows และมี <code>concurrency</code> group กันรันซ้อนอยู่แล้ว</td>
+        </tr>
+        <tr>
+          <td>Scheduled cron</td>
+          <td>ถูก<strong>ปิดอัตโนมัติ</strong>เมื่อ repo ไม่มี activity ติดต่อกัน 60 วัน</td>
+          <td><span class="tag warn">ระวัง</span> <code>quality-scan.yml</code> รัน cron ทุกวัน 03:00 (เวลาไทย) —
+              ถ้าหยุด push นาน 60 วัน cron จะเงียบไปเอง ต้องเข้าไปกด enable ใหม่ในแท็บ Actions</td>
+        </tr>
+        <tr>
+          <td>Runner ขนาดใหญ่ (larger runners เช่น 8-core, GPU)</td>
+          <td><strong>ไม่ฟรี</strong> แม้ repo จะ public</td>
+          <td><span class="tag ok">ปลอดภัย</span> ใช้ standard runner เท่านั้น</td>
+        </tr>
+        <tr>
+          <td>Workflow run ทั้ง run</td>
+          <td>สูงสุด 35 วัน</td>
+          <td><span class="tag ok">ปลอดภัย</span> ไม่เกี่ยวกับ use case นี้</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>วิธีดูยอดใช้ / billing</h2>
+  <ul>
+    <li><strong>ระดับองค์กร:</strong>
+      <code>github.com/organizations/Tanboon-Org/settings/billing</code> → หน้า <em>Usage</em>
+      (ต้องเป็น org owner ถึงจะเห็น)</li>
+    <li><strong>ระดับ run:</strong> เข้า repo → แท็บ <strong>Actions</strong> → คลิก run ใดก็ได้ →
+      เมนู <em>Usage</em> มุมขวา จะแสดงเวลา billable — ของ public repo จะขึ้น <strong>0</strong> เสมอ</li>
+  </ul>
+
+  <h2>ถ้าวันหนึ่งเปลี่ยน repo เป็น private</h2>
+  <p>ตรงนี้คือจุดที่เริ่มนับโควตา แต่ค่า default ของ GitHub ปลอดภัย ไม่หักเงินเงียบ ๆ:</p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Plan ขององค์กร</th><th>นาทีฟรี/เดือน</th><th>Artifact storage ฟรี</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Free</td><td>2,000 นาที</td><td>500 MB</td></tr>
+        <tr><td>Team</td><td>3,000 นาที</td><td>2 GB</td></tr>
+        <tr><td>Enterprise</td><td>50,000 นาที</td><td>50 GB</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <ul>
+    <li>นาทีนับตาม OS: Linux ×1, Windows ×2, macOS ×10 — ของเราเป็น Linux ล้วน</li>
+    <li><strong>ประมาณการยอดใช้ของ project นี้ถ้าเป็น private:</strong>
+      cron ทุกวัน ~30 นาที ≈ 900 นาที/เดือน + robot run ละ ~45 นาทีต่อ push/PR เข้า main
+      → มีโอกาสเกิน 2,000 นาที (Free plan) ได้ไม่ยาก</li>
+    <li><strong>โควตาหมดแล้วเกิดอะไรขึ้น:</strong> spending limit ของ Actions ตั้งต้นเป็น
+      <strong>$0</strong> — job จะ<em>รันไม่ขึ้น</em> (fail ตอน queue) จนกว่าจะขึ้นรอบเดือนใหม่
+      จะเสียเงินก็ต่อเมื่อ org owner ผูกบัตรและปรับ spending limit ขึ้นเองเท่านั้น
+      <strong>ไม่มีการหักเงินอัตโนมัติโดยไม่ได้ตั้งใจ</strong></li>
+    <li>Artifact ที่ workflow เก็บไว้ 14 วัน (โฟลเดอร์ <code>results/</code> — log.html, output.xml,
+      screenshots) จะเริ่มนับ storage ด้วยเมื่อเป็น private</li>
+  </ul>
+
+  <div class="warn-box">
+    <strong>⚠️ เรื่องที่สำคัญกว่าค่าใช้จ่าย: repo เป็น public + มี credentials หลุดอยู่ในโค้ด</strong>
+    การเป็น public ทำให้ finding ข้อ 1 ในรายงานรีวิว
+    (<code>docs/QA-Project-Review-2026-07-06.md</code>) หนักขึ้นมาก —
+    password และ <code>webUserToken</code> ที่ commit อยู่ใน
+    <code>resources/variables/test_data/users.json</code> และ
+    <code>wnw-checkout-orderflow.testdata.json</code> ถูกใครก็ได้เปิดดู
+    รวมถึง bot ที่ scan หา credentials บน GitHub ตลอดเวลา
+    → ควร <strong>rotate token/password ฝั่ง backend โดยเร็วที่สุด</strong>
+    แล้วย้ายค่าไปอ่านจาก GitHub Secrets / env var
+  </div>
+
+  <h2>อ้างอิง</h2>
+  <ul>
+    <li><a href="https://docs.github.com/billing/managing-billing-for-github-actions/about-billing-for-github-actions">About billing for GitHub Actions</a></li>
+    <li><a href="https://docs.github.com/actions/administering-github-actions/usage-limits-billing-and-administration">Usage limits, billing, and administration</a></li>
+  </ul>
+</main>
+</body>
+</html>
