@@ -214,23 +214,26 @@ def thai_number_format(value) -> str:
 
 def parse_amount(text: str):
     """Parse the first numeric (with optional decimals) value out of a price string,
-    stripping ฿, THB, commas, spaces, and a trailing '.-'.
+    stripping ฿, THB, commas, spaces, and a trailing '.-'. Keeps a leading minus
+    sign so discount/refund lines parse with the correct sign.
 
-    "฿1,646.97.-" -> 1646.97 ; "฿ 2,899.-" -> 2899.0 ; returns None if no number.
-    Mirrors getGrandTotalAmount()/getChargeAmount()/getPrice() parsing.
+    "฿1,646.97.-" -> 1646.97 ; "฿ 2,899.-" -> 2899.0 ; "-฿50.00" -> -50.0 ;
+    returns None if no number. Mirrors getGrandTotalAmount()/getChargeAmount()/getPrice().
     """
     if text is None:
         return None
-    cleaned = str(text).replace(",", "")
-    match = re.search(r"\d+(?:\.\d+)?", cleaned)
+    cleaned = re.sub(r"[฿\s,]|THB", "", str(text).replace("−", "-"))
+    match = re.search(r"-?\d+(?:\.\d+)?", cleaned)
     return float(match.group(0)) if match else None
 
 
 def parse_int_amount(text: str) -> int:
-    """Parse the first integer group from a string (getPrice() semantics): '฿ 1,599.-' -> 1599."""
+    """Parse the first integer group from a string (getPrice() semantics): '฿ 1,599.-' -> 1599.
+    Keeps a leading minus sign (discount lines): '-฿50' -> -50."""
     if text is None:
         return 0
-    match = re.search(r"[\d,]+", str(text))
+    cleaned = re.sub(r"[฿\s]|THB", "", str(text).replace("−", "-"))
+    match = re.search(r"-?\d[\d,]*", cleaned)
     return int(match.group(0).replace(",", "")) if match else 0
 
 
