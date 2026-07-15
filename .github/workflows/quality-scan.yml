@@ -9,7 +9,7 @@ name: Quality Scan (a11y + links)
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 20 * * *'   # 20:00 UTC = 03:00 ตามเวลาไทย ทุกวัน
+    # - cron: '0 20 * * *'   # 20:00 UTC = 03:00 ตามเวลาไทย ทุกวัน
 
 concurrency:
   group: quality-scan-${{ github.ref }}
